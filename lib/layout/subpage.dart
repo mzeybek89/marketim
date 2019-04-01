@@ -124,8 +124,8 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
      fiyat: 12.8,
      ),
 ];
-
-/*return Scaffold(
+/*tabbar with scroll */
+return Scaffold(
       body: NestedScrollView(
         controller: _scrollViewController,
         headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
@@ -162,10 +162,10 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
       ),
       
     
-);*/
+);
 
   /* tabBar Fakat dikey scroll yok */
-    return DefaultTabController(
+  /*  return DefaultTabController(
         length: choices.length,
         child: Scaffold(
           appBar: AppBar(
@@ -192,7 +192,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
             }).toList(),
           ),
         ),
-    );
+    );*/
 
 /* Tabbarsız ilk düz sayfa versiyonu */
    /* return new Scaffold(
