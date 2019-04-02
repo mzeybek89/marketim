@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
+import 'dart:math';
 
 
 
@@ -15,17 +16,18 @@ class SubPage extends StatefulWidget  {
   final String remoteImg;
   final String remoteLink;
 
-
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState(); 
 }
 
 class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMixin {
-
+  //var f = new NumberFormat("####.00# ₺", "tr_TR");
+  var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
   TabController _tabController;
   ScrollController _scrollViewController;
-  Color currentAppBarColor = Colors.red;
+  Color currentAppBarColor = Colors.black;
   final appBarColors = [
+    Colors.black,
     Colors.red,
     Colors.orange,
     Colors.green,
@@ -33,14 +35,13 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
     Colors.cyan,
     Colors.purple,
   ];
-  
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 6);
+    _tabController = TabController(vsync: this, length: appBarColors.length);
     _scrollViewController =ScrollController();
-      _tabController.addListener(_handleTabSelection);
+    _tabController.addListener(_handleTabSelection);
+    
   }
 
  void _handleTabSelection() {
@@ -57,73 +58,94 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
    super.dispose();
  }
 
-  
-
   @override
   Widget build(BuildContext context) {
-      
-  List<Choice> choices =  <Choice>[
+   List<Choice> choices =  <Choice>[
+    Choice(
+     index:-1,
+     title: 'Tümü', 
+     stockCode: widget.stockCode, 
+     productName: widget.productName, 
+     img: widget.img, 
+     remoteImg: widget.remoteImg, 
+     remoteLink: widget.remoteLink,  
+     icon: Icons.add_shopping_cart, 
+     fiyat: 0,
+     ),
    Choice(
+     index:0,
      title: 'Bim', 
      stockCode: widget.stockCode, 
      productName: widget.productName, 
      img: widget.img, 
      remoteImg: widget.remoteImg, 
      remoteLink: widget.remoteLink,  
-     icon: Icons.directions_car, 
+     icon: Icons.add_shopping_cart, 
      fiyat: 12,
      ),
      Choice(
+     index:1,
      title: 'Şok', 
      stockCode: widget.stockCode, 
      productName: widget.productName, 
      img: widget.img, 
      remoteImg: widget.remoteImg, 
      remoteLink: widget.remoteLink, 
-     icon: Icons.directions_car, 
+     icon: Icons.add_shopping_cart, 
      fiyat: 15,
      ),
      Choice(
+     index:2,
      title: 'Pehlivanoğlu', 
      stockCode: widget.stockCode, 
      productName: widget.productName, 
      img: widget.img, 
      remoteImg: widget.remoteImg, 
      remoteLink: widget.remoteLink, 
-     icon: Icons.directions_car, 
-     fiyat: 16.7,
+     icon: Icons.add_shopping_cart, 
+     fiyat: 6.84,
      ),
      Choice(
+     index:3,
      title: 'Migros', 
      stockCode: widget.stockCode, 
      productName: widget.productName, 
      img: widget.img, 
      remoteImg: widget.remoteImg, 
      remoteLink: widget.remoteLink, 
-     icon: Icons.directions_car, 
+     icon: Icons.add_shopping_cart, 
      fiyat: 13,
      ),
      Choice(
+     index:4,
      title: 'A101', 
      stockCode: widget.stockCode, 
      productName: widget.productName, 
      img: widget.img, 
      remoteImg: widget.remoteImg, 
      remoteLink: widget.remoteLink, 
-     icon: Icons.directions_car, 
+     icon: Icons.add_shopping_cart, 
      fiyat: 21,
      ),
      Choice(
+     index:5,
      title: 'Çimmar', 
      stockCode: widget.stockCode, 
      productName: widget.productName, 
      img: widget.img, 
      remoteImg: widget.remoteImg, 
      remoteLink: widget.remoteLink, 
-     icon: Icons.directions_car, 
+     icon: Icons.add_shopping_cart, 
      fiyat: 12.8,
      ),
 ];
+var liste = [0.00];
+choices.skip(1).forEach((element) {
+  liste.add(element.fiyat);
+});
+liste.removeAt(0);
+//choices2.sort((x,y)=>x.compareTo(y));
+
 /*tabbar with scroll */
 return Scaffold(
       body: NestedScrollView(
@@ -136,10 +158,9 @@ return Scaffold(
               backgroundColor: currentAppBarColor,
               floating: true,
               forceElevated: boxIsScrolled,
-              bottom: TabBar(  
-                    
+              bottom: TabBar(                      
                 isScrollable: true,          
-                tabs: choices.map((Choice choice) {
+                tabs: choices.map((Choice choice) {             
                 return Tab(
                   text: choice.title,
                   //icon: Icon(choice.icon),
@@ -150,13 +171,48 @@ return Scaffold(
             )
           ];
         },
-        body: TabBarView(
+        body: TabBarView(                    
            children: choices.map((Choice choice) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ChoiceCard(choice: choice),
-              );
-            }).toList(),
+             if(choice.index>=0){
+                return Padding(
+                  padding: const EdgeInsets.all(16),                  
+                  child:ChoiceCard(choice: choice),                               
+                );
+             }
+             else{
+               return Center(child: Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: choices.skip(1).map((choice) {  
+                   var style;                       
+                   if(choice.fiyat==liste.reduce(min)){                    
+                    style = TextStyle(
+                    color: Colors.green, 
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,                                       
+                    );
+                   }
+                   else
+                   {
+                    style = Theme.of(context).textTheme.display1;
+                   } 
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,                  
+                        children: <Widget>[                    
+                          Text(choice.title,style: style,),
+                          Text(":"),
+                          Text(f.format(choice.fiyat),style: style,),
+                        ],
+                      )
+                    );
+                                 
+                 }).toList(), 
+               ),
+               );
+             }
+                
+           }).toList(),
           controller: _tabController,
         ),
       ),
@@ -165,7 +221,7 @@ return Scaffold(
 );
 
   /* tabBar Fakat dikey scroll yok */
-  /*  return DefaultTabController(
+  /*return DefaultTabController(
         length: choices.length,
         child: Scaffold(
           appBar: AppBar(
@@ -185,14 +241,49 @@ return Scaffold(
           body: TabBarView(
             controller: _tabController,
             children: choices.map((Choice choice) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ChoiceCard(choice: choice),
-              );
-            }).toList(),
+             if(choice.index>=0){
+                return Padding(
+                  padding: const EdgeInsets.all(16),                  
+                  child:ChoiceCard(choice: choice),                               
+                );
+             }
+             else{
+               return Center(child: Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: choices.skip(1).map((choice) {  
+                   var style;                       
+                   if(choice.fiyat==liste.reduce(min)){                    
+                    style = TextStyle(
+                    color: Colors.green, 
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,                                       
+                    );
+                   }
+                   else
+                   {
+                    style = Theme.of(context).textTheme.display1;
+                   } 
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,                  
+                        children: <Widget>[                    
+                          Text(choice.title,style: style,),
+                          Text(":"),
+                          Text(f.format(choice.fiyat),style: style,),
+                        ],
+                      )
+                    );
+                                 
+                 }).toList(), 
+               ),
+               );
+             }
+                
+           }).toList(),
           ),
         ),
-    );*/
+  );*/
 
 /* Tabbarsız ilk düz sayfa versiyonu */
    /* return new Scaffold(
@@ -245,8 +336,8 @@ return Scaffold(
 
 
 class Choice {
-  const Choice({this.title, this.stockCode, this.productName, this.img, this.remoteImg, this.remoteLink, this.icon, this.fiyat});
-
+  const Choice({this.index,this.title, this.stockCode, this.productName, this.img, this.remoteImg, this.remoteLink, this.icon, this.fiyat});
+  final int index;
   final String title;
   final String stockCode;
   final String productName;
@@ -262,15 +353,17 @@ class Choice {
 
 class ChoiceCard extends StatelessWidget {
   const ChoiceCard({Key key, this.choice}) : super(key: key);
-
+  
   final Choice choice;
 
   @override
   Widget build(BuildContext context) {
     final TextStyle textStyle = Theme.of(context).textTheme.display1;
-    return Card(
-      color: Colors.white,
-        child: Column(
+    //var f = new NumberFormat("####.00# ₺", "tr_TR");
+    var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
+    /*return Card(
+      color: Colors.white,*/
+        return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[            
@@ -298,7 +391,7 @@ class ChoiceCard extends StatelessWidget {
             Container(
               alignment: Alignment.bottomRight,
               margin: EdgeInsets.fromLTRB(0, 10, 20, 0),
-              child: Text(choice.fiyat.toString()+" ₺",
+              child: Text(f.format(choice.fiyat),
               style: TextStyle(
                   color: Colors.grey.shade600,
                   //fontWeight: FontWeight.bold,
@@ -306,18 +399,21 @@ class ChoiceCard extends StatelessWidget {
                 ),
               ),                           
             ),
-            Container(
-              alignment: Alignment.bottomRight,
-              margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
-              child:   FloatingActionButton(              
-                child: Icon(Icons.add_shopping_cart),
-                onPressed: () {
-                }
+            Expanded(
+              child: Container(
+                alignment: Alignment.bottomRight,
+                margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
+                child:   FloatingActionButton(              
+                  child: Icon(choice.icon),
+                  onPressed: () {
+                  }
+                ),
               ),
-            ),
+            )
+            
                        
           ],
-        ),
+        //),
       
     );
   } 
