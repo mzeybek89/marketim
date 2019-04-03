@@ -39,6 +39,7 @@ void initState() {
         ),
         body: 
          searchTextField = AutoCompleteTextField<Urunler>(
+                        clearOnSubmit: false,                                             
                         style: new TextStyle(color: Colors.black, fontSize: 16.0),
                         decoration: new InputDecoration(
                         suffixIcon: Container(
@@ -98,9 +99,9 @@ void initState() {
                           return a.productName.compareTo(b.productName);
                         },
                         itemSubmitted: (item) {
-                          /*setState(() => 
+                          setState(() => 
                             searchTextField.textField.controller.text = item.productName
-                          );*/
+                          );
                           Route route = MaterialPageRoute(builder: (context) => SubPage(
                           id: item.id,
                           stockCode: item.stockCode,
