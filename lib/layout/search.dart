@@ -5,6 +5,7 @@ import './subpage.dart';
 
 class AutoComplete extends StatefulWidget {
 
+
   @override
   _AutoCompleteState createState() => new _AutoCompleteState();
 }
@@ -28,8 +29,8 @@ void initState() {
 
   _AutoCompleteState();
   AutoCompleteTextField searchTextField;
-  TextEditingController controller = new TextEditingController();
   GlobalKey<AutoCompleteTextFieldState<Urunler>> key = new GlobalKey();
+  TextEditingController controller = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,7 @@ void initState() {
         ),
         body: 
          searchTextField = AutoCompleteTextField<Urunler>(
+                        textInputAction: TextInputAction.done,
                         clearOnSubmit: false,                                             
                         style: new TextStyle(color: Colors.black, fontSize: 16.0),
                         decoration: new InputDecoration(
@@ -49,7 +51,7 @@ void initState() {
                         contentPadding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
                         filled: true,
                         hintText: 'Ürün Ara',
-                        hintStyle: TextStyle(color: Colors.black)
+                        hintStyle: TextStyle(color: Colors.black),
                         ),                      
                         itemBuilder: (context, item) {
                           return   Container(                            

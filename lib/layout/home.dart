@@ -21,7 +21,6 @@ class Home extends StatefulWidget  {
 
 class _MyHomePageState extends State<Home> {
   String _reader='';
- // Permission permission= Permission.Camera;
   int _selectedBottomIndex = 1;
   final String url = "http://likyone.tk/api/liste.php?s=0";
   List data;
@@ -63,7 +62,6 @@ class _MyHomePageState extends State<Home> {
         ],
       ),
       body: Center(
-        //child: _widgetOptions.elementAt(_selectedBottomIndex),
         child:  GridView.builder(
               primary: false,
               padding: const EdgeInsets.all(10),          
@@ -119,7 +117,7 @@ class _MyHomePageState extends State<Home> {
                     ),),
                   );
               } 
-            ),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(            
         items:[

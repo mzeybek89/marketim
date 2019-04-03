@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'layout/home.dart';
 import 'layout/search.dart';
-import 'layout/barcode.dart';
+
 
 
 
@@ -24,7 +24,6 @@ Future main() async {
     routes: {
       "/":(context) => Home(),
       "/search":(context) => AutoComplete(),
-      "/barcode":(context) => Barcode(),
     },
   ));
 }  
