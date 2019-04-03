@@ -157,7 +157,7 @@ return Scaffold(
               pinned: true,
               backgroundColor: currentAppBarColor,
               floating: true,
-              forceElevated: boxIsScrolled,
+              forceElevated: boxIsScrolled,              
               bottom: TabBar(                      
                 isScrollable: true,          
                 tabs: choices.map((Choice choice) {             

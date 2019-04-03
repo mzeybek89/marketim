@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'layout/home.dart';
-import 'layout/json.dart';
-import 'layout/hello.dart';
+import 'layout/search.dart';
 import 'layout/barcode.dart';
 
 
@@ -24,8 +23,7 @@ Future main() async {
     initialRoute: "/",
     routes: {
       "/":(context) => Home(),
-      "/json":(context) => Json(),
-      "/hello":(context) => TabsFabDemo(),
+      "/search":(context) => AutoComplete(),
       "/barcode":(context) => Barcode(),
     },
   ));
