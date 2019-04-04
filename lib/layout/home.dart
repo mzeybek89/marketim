@@ -55,23 +55,10 @@ class _MyHomePageState extends State<Home> {
             icon: Icon(Icons.search),
             tooltip: 'Search',
             onPressed:() => {
-              Navigator.pushNamed(context, "/search"),
+              Navigator.pushNamed(context, "/search4"),
             }, 
           ),
-          IconButton(
-            icon: Icon(Icons.sentiment_neutral),
-            tooltip: 'Search',
-            onPressed:() => {
-              Navigator.pushNamed(context, "/search2"),
-            }, 
-          ),
-          IconButton(
-            icon: Icon(Icons.sentiment_very_dissatisfied),
-            tooltip: 'Search',
-            onPressed:() => {
-              Navigator.pushNamed(context, "/search3"),
-            }, 
-          ),
+          
           
          
         ],
