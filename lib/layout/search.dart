@@ -1,124 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-import './urunler.dart';
-import './subpage.dart';
-
-class AutoComplete extends StatefulWidget {
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 
+
+class Search extends StatefulWidget{
   @override
-  _AutoCompleteState createState() => new _AutoCompleteState();
+   _SearchPageState createState() => _SearchPageState();
 }
 
-
-
-class _AutoCompleteState extends State<AutoComplete> {
-
-void _loadData() async {
-  await UrunlerViewModel.loadUrunler();
-}
-
-@override
-void initState() {
-  // focus SimpleAutoCompleteTextField after it builds
-    WidgetsBinding.instance.addPostFrameCallback((_) => FocusScope.of(context)
-        .requestFocus(key.currentState.textField.focusNode));
-  _loadData();
-  super.initState();
-}
-
-  _AutoCompleteState();
-  AutoCompleteTextField searchTextField;
-  GlobalKey<AutoCompleteTextFieldState<Urunler>> key = new GlobalKey();
-  TextEditingController controller = new TextEditingController();
-
+class _SearchPageState extends State<Search> {
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return Scaffold(
         appBar: AppBar(
           title: Text('Ürün Arama'),
+          /*actions: <Widget>[
+            IconButton(
+            icon: Icon(Icons.camera_alt),
+            tooltip: 'Scan',
+            onPressed:() {              
+               FocusScope.of(context).requestFocus(FocusNode());
+            }, 
+            ),
+          ],*/
         ),
-        body: 
-         searchTextField = AutoCompleteTextField<Urunler>(
-                        textInputAction: TextInputAction.done,
-                        clearOnSubmit: false,                                             
-                        style: new TextStyle(color: Colors.black, fontSize: 16.0),
-                        decoration: new InputDecoration(
-                        suffixIcon: Container(
-                          width: 85.0,
-                          height: 60.0,
-                        ),
-                        contentPadding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 20.0),
-                        filled: true,
-                        hintText: 'Ürün Ara',
-                        hintStyle: TextStyle(color: Colors.black),
-                        ),                      
-                        itemBuilder: (context, item) {
-                          return   Container(                            
-                            margin: EdgeInsets.all(10), 
-                            color: Colors.white,
-                            child:Stack( 
-                            alignment: Alignment.bottomCenter,                                                                              
-                            children: [
-                              FadeInImage.assetNetwork(                               
-                                placeholder: "assets/images/loading.gif",
-                                image: "http://likyone.tk/api/images/"+item.img,  
-                                height: 100,                  
-                                //image: data[index]["remote_img"], 
-                              ),
-                              Container(                                                      
-                                alignment: Alignment.bottomCenter,                                 
-                                child: Transform(                      
-                                  transform: Matrix4.skewY(0.0)..rotateZ(0), 
-                                  alignment: Alignment.bottomCenter,                                                     
-                                  child: Container( 
-                                    width: double.infinity,
-                                    padding: EdgeInsets.all(5),                        
-                                    color: Color(0xcdffffff),
-                                    child: Text(                                      
-                                      item.productName,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        ),
-                                        ),
-                                  ),
-                                ),
-                              
-                              )
-                                ],
-                                ),
-                          );
-                            
-                        },
-                        itemFilter: (item, query) {
-                          return item.productName
-                          .toLowerCase()
-                          .contains(query.toLowerCase());
-                        },
-                        itemSorter: (a, b) {
-                          return a.productName.compareTo(b.productName);
-                        },
-                        itemSubmitted: (item) {
-                          setState(() => 
-                            searchTextField.textField.controller.text = item.productName
-                          );
-                          Route route = MaterialPageRoute(builder: (context) => SubPage(
-                          id: item.id,
-                          stockCode: item.stockCode,
-                          productName: item.productName,
-                          img: item.img,
-                          remoteImg: item.remoteImg,
-                          remoteLink: item.remoteLink, 
-                          ));
-                          Navigator.push(context, route);
-                        },
-                        key: key,
-                        suggestions: UrunlerViewModel.urunler,
-                      ),
-        
-    );
+        body: TypeAheadField(
+        getImmediateSuggestions: true,
+        //hideOnEmpty: false,
+        hideSuggestionsOnKeyboardHide: false,      
+        textFieldConfiguration: TextFieldConfiguration(                      
+          autofocus: true,
+          textInputAction: TextInputAction.done,
+          style: TextStyle(
+            fontSize: 20,
+            decorationStyle: TextDecorationStyle.solid,
+            decoration: TextDecoration.none,
+
+          ), 
+          decoration: InputDecoration(
+            border: OutlineInputBorder()
+          )
+        ),
+        suggestionsCallback: (pattern) async {
+          final String url = "http://likyone.tk/api/liste.php?s=0";
+          var res =  await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
+          return json.decode(res.body);
+        },
+        itemBuilder: (context, suggestion) {
+          return ListTile(
+            leading: Icon(Icons.shopping_cart),
+            title: Text(suggestion['product_name']),
+            subtitle: Text(suggestion['stock_code']),
+          );
+        },
+        onSuggestionSelected: (suggestion) {
+          /*Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ProductPage(product: suggestion)
+          ));*/
+          print(suggestion);          
+        },
+      ),
+     );
   }
+
 }
 

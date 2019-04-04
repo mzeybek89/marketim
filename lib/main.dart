@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'layout/home.dart';
+import 'layout/search2.dart';
 import 'layout/search.dart';
 
 
@@ -23,7 +24,8 @@ Future main() async {
     initialRoute: "/",
     routes: {
       "/":(context) => Home(),
-      "/search":(context) => AutoComplete(),
+      "/search2":(context) => AutoComplete(),
+      "/search":(context) => Search(),
     },
   ));
 }  

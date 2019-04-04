@@ -28,7 +28,7 @@ dependencies:
   barcode_scan: ^1.0.0
   intl: ^0.15.8
   autocomplete_textfield: ^1.6.4
-
+  flutter_typeahead: ^1.4.0
 
 
 
