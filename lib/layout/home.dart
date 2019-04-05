@@ -24,8 +24,49 @@ class _MyHomePageState extends State<Home> {
   int _selectedBottomIndex = 1;
   final String url = "http://likyone.tk/api/liste.php?s=0";
   List data;
-  
-   Future<String> getSWData() async {
+
+  Future loadUrunler(String query) async {
+    try {
+      final String url = "http://likyone.tk/api/detay.php?code="+query;
+      //String jsonString = await rootBundle.loadString('assets/players.json');
+      var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
+      Map<String, dynamic> gelen = json.decode(res.body);
+
+      if(gelen==null){
+          Route route = MaterialPageRoute(builder: (context) => SubPage(
+            id: 0,
+            stockCode: query,
+            productName: 'Ürün Bulunamadı',
+            img: 'notFound.png',
+            remoteImg: '',
+            remoteLink: '', 
+            ));
+            Navigator.push(context, route);
+      }
+      else
+      {
+        Route route = MaterialPageRoute(builder: (context) => SubPage(
+            id: int.parse(gelen['id']),
+            stockCode: query,
+            productName: gelen['product_name'],
+            img: gelen["img"],
+            remoteImg: gelen['remote_img'],
+            remoteLink: gelen['remote_link'], 
+            ));
+            Navigator.push(context, route);
+      }
+
+      
+      
+      
+      
+    } catch (e) {
+      print(e);
+    }
+  }
+
+
+  Future<String> getSWData() async {
     var res =  await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
 
     setState(() {
@@ -55,7 +96,7 @@ class _MyHomePageState extends State<Home> {
             icon: Icon(Icons.search),
             tooltip: 'Search',
             onPressed:() => {
-              Navigator.pushNamed(context, "/search4"),
+              Navigator.pushNamed(context, "/search3"),
             }, 
           ),
           
@@ -160,15 +201,8 @@ class _MyHomePageState extends State<Home> {
           if (!mounted) {
             return;
           }
-           Route route = MaterialPageRoute(builder: (context) => SubPage(
-            id: 0,
-            stockCode: reader,
-            productName: reader,
-            img: "nutella.png",
-            remoteImg: "",
-            remoteLink: "", 
-            ));
-          Navigator.push(context, route);
+          
+          loadUrunler(reader);        
           
       setState(() => this._reader=reader);
     } on PlatformException catch(e) {

@@ -15,13 +15,14 @@ class SubPage extends StatefulWidget  {
   final String img;
   final String remoteImg;
   final String remoteLink;
-
+  
   @override
   _MyHomePageState createState() => _MyHomePageState(); 
 }
 
 class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMixin {
   //var f = new NumberFormat("####.00# ₺", "tr_TR");
+  
   var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
   TabController _tabController;
   ScrollController _scrollViewController;
@@ -180,35 +181,67 @@ return Scaffold(
                 );
              }
              else{
-               return Center(child: Column(
-                 mainAxisAlignment: MainAxisAlignment.center,
-                 children: choices.skip(1).map((choice) {  
-                   var style;                       
-                   if(choice.fiyat==liste.reduce(min)){                    
-                    style = TextStyle(
-                    color: Colors.green, 
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,                                       
-                    );
-                   }
-                   else
-                   {
-                    style = Theme.of(context).textTheme.display1;
-                   } 
-                    return Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,                  
-                        children: <Widget>[                    
-                          Text(choice.title,style: style,),
-                          Text(":"),
-                          Text(f.format(choice.fiyat),style: style,),
-                        ],
-                      )
-                    );
-                                 
-                 }).toList(), 
-               ),
+              return  Center(                 
+                 child:
+               Column(                 
+                 children: <Widget>[
+                    Container(                      
+                      alignment: Alignment.topCenter,          
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        widget.productName,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,              
+                        ),
+                      ),
+                      color: Color(0xcd000000),
+                      height: 56,
+                    ),
+                    FadeInImage.assetNetwork(                               
+                      placeholder: "assets/images/loading.gif",              
+                      image: 'http://likyone.tk/api/images/'+widget.img, 
+                      height: 200,
+                    ),
+                   Center(
+                     child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: choices.skip(1).map((choice) {  
+                          var style;                       
+                          if(choice.fiyat==liste.reduce(min)){                    
+                            style = TextStyle(
+                            color: Colors.green, 
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,                                       
+                            );
+                          }
+                          else
+                          {
+                            style = TextStyle(
+                            color: Colors.grey.shade700, 
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,                                       
+                            );
+                          } 
+                            return Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,                  
+                                children: <Widget>[                    
+                                  Text(choice.title,style: style,),
+                                  Text(":"),
+                                  Text(f.format(choice.fiyat),style: style,),
+                                ],
+                              )
+                            );
+                                        
+                        }).toList(), 
+                      ),
+                   )
+                 ],
+               ),               
+               
+              
                );
              }
                 
@@ -383,7 +416,7 @@ class ChoiceCard extends StatelessWidget {
             ),
             FadeInImage.assetNetwork(                               
               placeholder: "assets/images/loading.gif",              
-              image: "http://likyone.tk/api/images/"+choice.img, 
+              image: 'http://likyone.tk/api/images/'+choice.img, 
               height: 200,
             ),
             Text("Stock Code: "+choice.stockCode),  

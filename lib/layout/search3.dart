@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import './subpage.dart';
 class Search3 extends StatefulWidget {
   Search3({Key key}) : super(key: key);
   
@@ -26,7 +26,10 @@ class _Search3PageState extends State<Search3> {
       var categoryJson = parsedJson;
       urunler.clear();
       for (int i = 0; i < categoryJson.length; i++) {
-        urunler.add(new Urunler.fromJson(categoryJson[i]));
+        setState(() {
+          urunler.add(new Urunler.fromJson(categoryJson[i]));  
+        });
+        
       }
     } catch (e) {
       print(e);
@@ -36,6 +39,7 @@ class _Search3PageState extends State<Search3> {
   @override
   void initState() {
     //items.addAll(duplicateItems);
+     
     super.initState();
   }
 
@@ -49,7 +53,7 @@ class _Search3PageState extends State<Search3> {
         if(item.contains(query)) {
           dummyListData.add(item);
         }
-      });*/
+      });*/ 
 
      
     setState(() {
@@ -84,6 +88,7 @@ class _Search3PageState extends State<Search3> {
                 onChanged: (value) {
                   filterSearchResults(value);
                 },
+                autofocus: true,
                 controller: editingController,
                 decoration: InputDecoration(
                     labelText: "Search",
@@ -100,6 +105,18 @@ class _Search3PageState extends State<Search3> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(urunler[index].productName),
+                    subtitle: Text(urunler[index].stockCode),
+                    onTap: (){
+                      Route route = MaterialPageRoute(builder: (context) => SubPage(
+                          id: urunler[index].id,
+                          stockCode: urunler[index].stockCode,
+                          productName: urunler[index].productName,
+                          img: urunler[index].img,
+                          remoteImg: urunler[index].remoteImg,
+                          remoteLink: urunler[index].remoteLink, 
+                          ));
+                          Navigator.push(context, route);
+                    },
                   );
                 },
               ),

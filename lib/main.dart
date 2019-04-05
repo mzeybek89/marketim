@@ -20,7 +20,10 @@ Future main() async {
   runApp(new MaterialApp(
     title: "Marketim",
     theme: ThemeData(
-      primaryColor: Colors.blue.shade800
+      primaryColor: Colors.blue.shade800,
+      accentColor: Colors.blue,
+      canvasColor: Colors.white,
+      
     ),
     //home: Home(),
     initialRoute: "/",
