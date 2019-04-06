@@ -1,70 +1,155 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import './subpage.dart';
 
 
 
-class Search extends StatefulWidget{
+class Search extends StatefulWidget {
+  Search({Key key}) : super(key: key);
   @override
-   _SearchPageState createState() => _SearchPageState();
+  _SearchPageState createState() => new _SearchPageState();
 }
 
 class _SearchPageState extends State<Search> {
-  
-  @override
-  Widget build(BuildContext context) {
-     return Scaffold(
-        appBar: AppBar(
-          title: Text('Ürün Arama'),
-          /*actions: <Widget>[
-            IconButton(
-            icon: Icon(Icons.camera_alt),
-            tooltip: 'Scan',
-            onPressed:() {              
-               FocusScope.of(context).requestFocus(FocusNode());
-            }, 
-            ),
-          ],*/
-        ),
-        body: TypeAheadField(
-        getImmediateSuggestions: true,
-        //hideOnEmpty: false,
-        hideSuggestionsOnKeyboardHide: false,      
-        textFieldConfiguration: TextFieldConfiguration(                      
-          autofocus: true,
-          textInputAction: TextInputAction.done,
-          style: TextStyle(
-            fontSize: 20,
-            decorationStyle: TextDecorationStyle.solid,
-            decoration: TextDecoration.none,
+  TextEditingController editingController = TextEditingController();
+  bool _progress = true;
+  final duplicateItems = List<Urunler>();
+    Future loadUrunler() async {
+    try {
+      final String url = "http://likyone.tk/api/liste.php?s=0&all=true";
+      //String jsonString = await rootBundle.loadString('assets/players.json');
+      var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
+      List parsedJson = json.decode(res.body);
+      var categoryJson = parsedJson;
+      for (int i = 0; i < categoryJson.length; i++) {
+        duplicateItems.add(new Urunler.fromJson(categoryJson[i]));
+      }
+    } catch (e) {
+      print(e);
+    }
+        items.addAll(duplicateItems);
+        setState(() {
+          _progress=false;
+        });
 
-          ), 
-          decoration: InputDecoration(
-            border: OutlineInputBorder()
-          )
-        ),
-        suggestionsCallback: (pattern) async {
-          final String url = "http://likyone.tk/api/liste.php?s=0";
-          var res =  await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
-          return json.decode(res.body);
-        },
-        itemBuilder: (context, suggestion) {
-          return ListTile(
-            leading: Icon(Icons.shopping_cart),
-            title: Text(suggestion['product_name']),
-            subtitle: Text(suggestion['stock_code']),
-          );
-        },
-        onSuggestionSelected: (suggestion) {
-          /*Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ProductPage(product: suggestion)
-          ));*/
-          print(suggestion);          
-        },
-      ),
-     );
+  }
+  var items = List<Urunler>();
+
+  @override
+  void initState() {
+    loadUrunler();
+    super.initState();
   }
 
+  void filterSearchResults(String query) {
+    List<Urunler> dummySearchList = List<Urunler>();
+    dummySearchList.addAll(duplicateItems);
+    if(query.isNotEmpty) {
+      List<Urunler> dummyListData = List<Urunler>();
+      dummySearchList.forEach((item) {
+        if(item.productName.toLowerCase().contains(query.toLowerCase())) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        items.clear();
+        items.addAll(dummyListData);
+      });
+      return;
+    } else {
+      setState(() {
+        items.clear();
+        items.addAll(duplicateItems);
+      });
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Ürün Arama'),
+      ),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value) {
+                  filterSearchResults(value);
+                },
+                autofocus: true,
+                controller: editingController,
+                decoration: InputDecoration(
+                    labelText: "Search",
+                    hintText: "Search",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+              ),
+            ),
+            _progress == true?const CircularProgressIndicator():
+            Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(items[index].productName),
+                    subtitle: Text(items[index].stockCode),
+                    onTap: (){
+                       Route route = MaterialPageRoute(builder: (context) => SubPage(
+                          id: items[index].id,
+                          stockCode: items[index].stockCode,
+                          productName: items[index].productName,
+                          img: items[index].img,
+                          remoteImg: items[index].remoteImg,
+                          remoteLink: items[index].remoteLink, 
+                          ));
+                          Navigator.push(context, route);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
+
+
+class Urunler {
+  String stockCode;
+  int id;
+  String productName;
+  String img;
+  String remoteImg;
+  String remoteLink;
+
+
+  Urunler({
+    this.stockCode,
+    this.id,
+    this.productName,
+    this.img,
+    this.remoteImg,
+    this.remoteLink
+  });
+
+  factory Urunler.fromJson(Map<String,dynamic> parsedJson) {
+    return Urunler(
+        stockCode: parsedJson['stock_code'] as String,
+        id: int.parse(parsedJson['id']),
+        productName: parsedJson['product_name'] as String,
+        img: parsedJson['img'] as String,
+        remoteImg: parsedJson['remote_img'] as String,
+        remoteLink: parsedJson['remote_link'] as String
+    );
+  }
+}

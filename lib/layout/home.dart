@@ -1,8 +1,7 @@
-import 'package:Marketim/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:barcode_scan/barcode_scan.dart';
-//import 'package:simple_permissions/simple_permissions.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -24,6 +23,7 @@ class _MyHomePageState extends State<Home> {
   int _selectedBottomIndex = 1;
   final String url = "http://likyone.tk/api/liste.php?s=0";
   List data;
+  TextEditingController txtListeEkle = new TextEditingController();
 
   Future loadUrunler(String query) async {
     try {
@@ -96,7 +96,7 @@ class _MyHomePageState extends State<Home> {
             icon: Icon(Icons.search),
             tooltip: 'Search',
             onPressed:() => {
-              Navigator.pushNamed(context, "/search3"),
+              Navigator.pushNamed(context, "/search2"),
             }, 
           ),
           
@@ -180,7 +180,116 @@ class _MyHomePageState extends State<Home> {
         currentIndex: _selectedBottomIndex,
         onTap: _onItemTapped,
       ),
-     drawer: MyDrawer(),
+     drawer: Drawer(
+        //elevation: 20.0,        
+        child:ListView( 
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+             UserAccountsDrawerHeader(
+                accountName: Text('Mehmet Zeybek'),                
+                accountEmail: Text('mehmetzeybek@icloud.com'),
+                currentAccountPicture:
+                Image.network('https://bit.ly/2U0JsMd'),
+                decoration: BoxDecoration(color: Colors.blueAccent),
+              ),
+              ListTile(
+                leading: Icon(Icons.list),
+                title: Text('Temizlik Listesi'),
+                onTap: () {                  
+                  Navigator.pop(context); // close the drawer
+                },                
+              ), 
+                Divider(
+                  height: 2.0,
+                ),
+              ListTile(
+                leading: Icon(Icons.list),
+                title: Text('Yiyecek Listesi'),
+                onTap: () {                  
+                  Navigator.pop(context); // close the drawer
+                },                
+              ),
+              Divider(
+                  height: 2.0,
+                ),
+              ListTile(
+                leading: Icon(Icons.list),
+                title: Text('Aburcubur Listesi'),
+                onTap: () {                  
+                  Navigator.pop(context); // close the drawer
+                },                
+              ),
+              
+              Container(
+                alignment: Alignment.bottomRight,
+                margin: EdgeInsets.fromLTRB(0, 20, 20, 0),
+                child: FloatingActionButton(
+                  child:Icon(Icons.add),
+                  onPressed: ()=> {
+                    txtListeEkle.text="",                    
+                     showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          // return object of type Dialog
+                          return AlertDialog(
+                            title: new Text("Liste Ekle"),
+                            content: new Container(
+                              child: 
+                                TextField(
+                                  autofocus: false,
+                                  autocorrect: false,
+                                  controller: txtListeEkle,
+                                ),
+                              
+                            ),
+                            actions: <Widget>[
+                              new FlatButton(
+                                child: new Text("Vazgeç"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              new FlatButton(
+                                child: new Text("Kaydet"),
+                                onPressed: () {
+                                  if(txtListeEkle.text==""){
+                                    FocusScope.of(context).requestFocus(new FocusNode());
+                                      return Fluttertoast.showToast(
+                                        msg: "Lüften Yazı Alanını Boş Bırakmayın",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIos: 2,
+                                        backgroundColor: Colors.red,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0
+                                    );
+                                  }
+                                  else{
+                                    /* Burada Liste Db Ye Kaydedilecek */
+                                    Navigator.of(context).pop();
+                                     Fluttertoast.showToast(
+                                        msg: "Liste Kaydedilme İşlemi Henüz Yapılamıyor",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.BOTTOM,
+                                        timeInSecForIos: 2,
+                                        backgroundColor: Colors.green,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ), 
+                  },
+                ),
+              )
+              
+          ],
+        )
+      ),
     
     );
   }
@@ -246,22 +355,6 @@ class _MyHomePageState extends State<Home> {
     super.initState();
     this.getSWData();
   }
-/*
-// Method for scanning barcode....
-  Future barcodeScanning() async {
-//imageSelectorGallery();
-
-    try {      
-      String barcode = await FlutterBarcodeScanner.scanBarcode("#000000");
-      setState(() => this.barcode = barcode);
-    } on PlatformException catch (e) {
-        setState(() => this.barcode = 'Unknown error: $e');
-    } on FormatException {
-      setState(() => this.barcode =
-          'Nothing captured.');
-    } catch (e) {
-      setState(() => this.barcode = 'Unknown error: $e');
-    }
-  }*/
+  
 
 }
