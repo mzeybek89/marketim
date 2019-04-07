@@ -33,7 +33,7 @@ class DatabaseHelper{
 
   Future<Database> initializeDatabase()async{
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'marketim.db';
+    String path = directory.path + '/marketim.db';
 
     var marketimDatabase = openDatabase(path,version: 1, onCreate: _createDb);
     return marketimDatabase;
