@@ -43,7 +43,7 @@ class DatabaseHelper{
     await db.execute('CREATE TABLE $listeTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colTitle TEXT)');
   }
 
-  Future<List<Map<String, dynamic>>>getListe() async{
+  Future<List<Map<String, dynamic>>>getListeMapList() async{
     Database db = await this.database;
     //var result = await db.rawQuery('SELECT * FROM $listeTable');
     var result = await db.query(listeTable);
@@ -51,9 +51,24 @@ class DatabaseHelper{
     return result;
   }
 
-  Future<int> addListe(Liste liste) async{
+  Future<List<Liste>> getListe() async{
+    var listeMapList = await getListeMapList();
+    int count = listeMapList.length;
+
+    List<Liste> liste = List<Liste>();
+
+    for (int i=0; i<count; i++){
+      liste.add(Liste.fromMapObject(listeMapList[i]));
+    }
+
+    return liste;
+
+  }
+
+  Future<int> addListe(String title) async{
     Database db = await this.database;
-    var result = await db.insert('$listeTable', liste.toMap());
+    //var result = await db.insert('$listeTable', liste.toMap());
+    var result = await db.rawInsert("insert into $listeTable ($colTitle) values('$title')");
     return result;
   }
 
@@ -63,9 +78,9 @@ class DatabaseHelper{
     return result;
   }
 
-  Future<int> deleteListe(Liste liste) async{
+  Future<int> deleteListe(int id) async{
     Database db = await this.database;
-    var result = await db.delete('$listeTable',where:'$colId = ?',whereArgs:[liste.id]);
+    var result = await db.rawDelete("delete from $listeTable where $colId=$id");
     return result;
   }
 

@@ -7,7 +7,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import './subpage.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:Marketim/models/liste.dart';
+import 'package:Marketim/utils/database_helper.dart';
 
 
 
@@ -16,18 +17,23 @@ class Home extends StatefulWidget  {
 
   Home({Key key}) : super(key: key);
 
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Liste> liste;
+  int count = 0;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<Home> {
+  
   String _reader='';
   int _selectedBottomIndex = 1;
-  final String url = "http://likyone.tk/api/liste.php?s=0";
+
   List data;
   TextEditingController txtListeEkle = new TextEditingController();
 
-  Future loadUrunler(String query) async {
+  Future loadUrunler(String query) async { //for barcode_scan
     try {
       final String url = "http://likyone.tk/api/detay.php?code="+query;
       //String jsonString = await rootBundle.loadString('assets/players.json');
@@ -67,8 +73,8 @@ class _MyHomePageState extends State<Home> {
     }
   }
 
-
-  Future<String> getSWData() async {
+  Future<String> getSWData() async { // anasayfa ürünler load
+    final String url = "http://likyone.tk/api/liste.php?s=0";
     var res =  await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
 
     setState(() {
@@ -79,10 +85,54 @@ class _MyHomePageState extends State<Home> {
     return "Success!";
   }
 
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Liste> liste;
+  int count = 0; 
+  int _selectedDrawerIndex = 0;
+
+  void _saveListe(BuildContext context,String title) async{
+    var res = await databaseHelper.addListe(title);
+    if(res!=0){
+      _showSnackBar(context, "Liste Eklendi");
+      updateListe();
+    }
+    else{
+      _showSnackBar(context, "Liste Eklemede Hata");
+    }
+  }
+
+  void _deletelistItem(BuildContext context, int id) async{
+    int result = await databaseHelper.deleteListe(id);
+    _showSnackBar(context, "Liste Başarıyla Silindi");
+    updateListe();
+  }
+
+  void _showSnackBar(BuildContext context,String message){
+    final snackbar = SnackBar(content: Text(message));
+    Scaffold.of(context).showSnackBar(snackbar);
+  }
+
+  void updateListe(){
+     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+     dbFuture.then((database){
+       Future<List<Liste>> listeFuture = databaseHelper.getListe();
+       listeFuture.then((liste){
+         setState(() {
+           this.liste = liste;
+           this.count = liste.length;
+         });
+       });
+     });
+  }
+  
   @override
   Widget build(BuildContext context) {
 
-
+    if(liste==null){
+      liste = List<Liste>();
+      updateListe();
+    }
+    
     return new Scaffold(
       appBar: AppBar(
         title: Text('Marketim'),
@@ -183,128 +233,120 @@ class _MyHomePageState extends State<Home> {
         onTap: _onItemTapped,
       ),
      drawer: Drawer(
-        //elevation: 20.0,        
-        child:ListView( 
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-             UserAccountsDrawerHeader(
+       child:Column(           
+           mainAxisAlignment: MainAxisAlignment.start,
+           crossAxisAlignment: CrossAxisAlignment.start,
+           children: <Widget>[
+            UserAccountsDrawerHeader(
                 accountName: Text('Mehmet Zeybek'),                
                 accountEmail: Text('mehmetzeybek@icloud.com'),
                 currentAccountPicture:
                 Image.network('https://bit.ly/2U0JsMd'),
-                decoration: BoxDecoration(color: Colors.blueAccent),
-              ),
-              ListTile(
-                leading: Icon(Icons.list),
-                title: Text('Temizlik Listesi'),
-                onTap: () {                  
-                  Navigator.pop(context); // close the drawer
-                },                
-              ), 
-                Divider(
-                  height: 2.0,
-                ),
-              ListTile(
-                leading: Icon(Icons.list),
-                title: Text('Yiyecek Listesi'),
-                onTap: () {                  
-                  Navigator.pop(context); // close the drawer
-                },                
-              ),
-              Divider(
-                  height: 2.0,
-                ),
-              ListTile(
-                leading: Icon(Icons.list),
-                title: Text('Aburcubur Listesi'),
-                onTap: () {                  
-                  Navigator.pop(context); // close the drawer
-                },                
-              ),
-              
-              Container(
-                alignment: Alignment.bottomRight,
-                margin: EdgeInsets.fromLTRB(0, 20, 20, 0),
-                child: FloatingActionButton(
-                  child:Icon(Icons.add),
-                  onPressed: ()=> {
-                    txtListeEkle.text="",                    
-                     showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          // return object of type Dialog
-                          return AlertDialog(
-                            title: new Text("Liste Ekle"),
-                            content: new Container(
-                              child: 
-                                TextField(
-                                  autofocus: false,
-                                  autocorrect: false,
-                                  controller: txtListeEkle,
+                decoration: BoxDecoration(color: Colors.blueAccent),              
+             ),
+             Expanded(
+               child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: liste.length+1,          
+                itemBuilder: (BuildContext context, int index) {
+                 return index==liste.length ?  
+                    Container(
+                  alignment: Alignment.bottomRight,
+                  margin: EdgeInsets.fromLTRB(0, 20, 20, 20),
+                  child: FloatingActionButton(
+                    child:Icon(Icons.add),
+                    onPressed: ()=> {
+                      txtListeEkle.text="",                    
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context2) {
+                            // return object of type Dialog
+                            return AlertDialog(
+                              title: new Text("Liste Ekle"),
+                              content: new Container(
+                                child: 
+                                  TextField(
+                                    autofocus: false,
+                                    autocorrect: false,
+                                    controller: txtListeEkle,
+                                  ),
+                                
+                              ),
+                              actions: <Widget>[
+                                new FlatButton(
+                                  child: new Text("Vazgeç"),
+                                  onPressed: () {
+                                    Navigator.of(context2).pop();
+                                  },
                                 ),
-                              
-                            ),
-                            actions: <Widget>[
-                              new FlatButton(
-                                child: new Text("Vazgeç"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              new FlatButton(
-                                child: new Text("Kaydet"),
-                                onPressed: () {
-                                  if(txtListeEkle.text==""){
-                                    FocusScope.of(context).requestFocus(new FocusNode());
-                                      return Fluttertoast.showToast(
-                                        msg: "Lüften Yazı Alanını Boş Bırakmayın",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIos: 2,
-                                        backgroundColor: Colors.red,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0
-                                    );
-                                  }
-                                  else{
-                                    /* Burada Liste Db Ye Kaydedilecek */
-                                    Navigator.of(context).pop();
-                                     Fluttertoast.showToast(
-                                        msg: "Liste Kaydedilme İşlemi Henüz Yapılamıyor",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIos: 2,
-                                        backgroundColor: Colors.green,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0
-                                    );
-                                  }
-                                },
-                              ),
-                            ],
-                          );
+                                new FlatButton(
+                                  child: new Text("Kaydet"),
+                                  onPressed: () {
+                                    if(txtListeEkle.text==""){
+                                      FocusScope.of(context2).requestFocus(new FocusNode());
+                                        return Fluttertoast.showToast(
+                                          msg: "Lüften Yazı Alanını Boş Bırakmayın",
+                                          toastLength: Toast.LENGTH_LONG,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIos: 2,
+                                          backgroundColor: Colors.red,
+                                          textColor: Colors.white,
+                                          fontSize: 16.0
+                                      );
+                                    }
+                                    else{
+                                      /* Burada Liste Db Ye Kaydedilecek */                                    
+                                      _saveListe(context,txtListeEkle.text);                                      
+                                      Navigator.of(context).pop();                                    
+                                    }
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        ), 
+                    },
+                  ),
+                ) 
+                : 
+                   Column(
+                    children: <Widget>[
+                        ListTile(  
+                        leading: Icon(Icons.list),                      
+                        title: Text(liste[index].title),                        
+                        trailing: GestureDetector(
+                          child: Icon(Icons.delete, color: Colors.grey,),
+                          onTap: () {
+                            _deletelistItem(context,liste[index].id);
+                          },
+                        ),
+
+
+                        onTap: () {
+                          debugPrint("ListTile Tapped");
+                          //navigateToDetail(this.noteList[position],'Edit Note');
                         },
-                      ), 
-                  },
-                ),
-              )
+
+                      ),
+                      Divider(
+                        height: 2.0,
+                      ),                      
+                    ],
+                  );
+                },
+              ),
+             )
               
-          ],
-        )
+            ],
+       ),
       ),
     
     );
   }
 
 
-/*barcode scan start*//*
- requestPermission() async {
-    PermissionStatus result = await SimplePermissions.requestPermission(permission);
-    setState(()=> new SnackBar
-    (backgroundColor: Colors.red,content: new Text(" $result"),),
-    
-    );
-  }*/
   scan() async {
     try {
       String reader= await BarcodeScanner.scan();
@@ -331,7 +373,7 @@ class _MyHomePageState extends State<Home> {
 
   /* barode scan finish */
 
- void _onItemTapped(int i){
+ void _onItemTapped(int i){  //bottom menu
    
     setState(() {
       _selectedBottomIndex = i;
@@ -352,6 +394,13 @@ class _MyHomePageState extends State<Home> {
     }        
  }
 
+ _onSelectItem(int index) {
+     setState(() {
+        _selectedDrawerIndex = index;  
+      });
+      Navigator.of(context).pop(); // close the drawer
+  }
+
  @override
   void initState() {
     super.initState();
@@ -360,3 +409,4 @@ class _MyHomePageState extends State<Home> {
   
 
 }
+
