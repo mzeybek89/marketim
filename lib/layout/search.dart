@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 import './subpage.dart';
+import 'package:path_provider/path_provider.dart';
+//import 'package:async_resource/file_resource.dart';
+
 
 
 
@@ -14,17 +18,37 @@ class Search extends StatefulWidget {
 class _SearchPageState extends State<Search> {
   TextEditingController editingController = TextEditingController();
   bool _progress = true;
-  final duplicateItems = List<Urunler>();
+  var duplicateItems = List<Urunler>();
+ 
+  File jsonFile;
+  Directory dir;
+  String fileName = "urunler.json";
+  bool fileExists = false;
+  //Map<String, String> fileContent;
+  List fileContent;
+
     Future loadUrunler() async {
     try {
-      final String url = "http://likyone.tk/api/liste.php?s=0&all=true";
+  
+     getApplicationDocumentsDirectory().then((Directory directory) {
+        dir = directory;
+        jsonFile = new File(dir.path + "/" + fileName);
+        fileExists = jsonFile.existsSync();
+        if (fileExists) this.setState(() => fileContent = json.decode(jsonFile.readAsStringSync()));
+        var categoryJson = fileContent;
+        for (int i = 0; i < categoryJson.length; i++) {
+          duplicateItems.add(new Urunler.fromJson(categoryJson[i]));
+        }
+      });
+
+      /*final String url = "http://likyone.tk/api/liste.php?s=0&all=true";
       //String jsonString = await rootBundle.loadString('assets/players.json');
       var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
       List parsedJson = json.decode(res.body);
       var categoryJson = parsedJson;
       for (int i = 0; i < categoryJson.length; i++) {
         duplicateItems.add(new Urunler.fromJson(categoryJson[i]));
-      }
+      }*/
     } catch (e) {
       print(e);
     }
@@ -34,6 +58,8 @@ class _SearchPageState extends State<Search> {
         });
 
   }
+
+
   var items = List<Urunler>();
 
   @override
@@ -47,6 +73,7 @@ class _SearchPageState extends State<Search> {
     dummySearchList.addAll(duplicateItems);
     if(query.isNotEmpty) {
       List<Urunler> dummyListData = List<Urunler>();
+
       dummySearchList.forEach((item) {
         if(item.productName.toLowerCase().contains(query.toLowerCase())) {
           dummyListData.add(item);
@@ -60,7 +87,7 @@ class _SearchPageState extends State<Search> {
     } else {
       setState(() {
         items.clear();
-        items.addAll(duplicateItems);
+        //items.addAll(duplicateItems);
       });
     }
 

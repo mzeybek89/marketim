@@ -17,10 +17,6 @@ class Home extends StatefulWidget  {
 
   Home({Key key}) : super(key: key);
 
-  DatabaseHelper databaseHelper = DatabaseHelper();
-  List<Liste> liste;
-  int count = 0;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -93,23 +89,35 @@ class _MyHomePageState extends State<Home> {
   void _saveListe(BuildContext context,String title) async{
     var res = await databaseHelper.addListe(title);
     if(res!=0){
-      _showSnackBar(context, "Liste Eklendi");
+      _showToastMsg(context, "Liste Eklendi",Colors.green);
       updateListe();
     }
     else{
-      _showSnackBar(context, "Liste Eklemede Hata");
+      _showToastMsg(context, "Liste Eklemede Hata",Colors.red);
     }
   }
 
   void _deletelistItem(BuildContext context, int id) async{
     int result = await databaseHelper.deleteListe(id);
-    _showSnackBar(context, "Liste Başarıyla Silindi");
+    _showToastMsg(context, "Liste Silindi",Colors.orange);
     updateListe();
   }
 
   void _showSnackBar(BuildContext context,String message){
     final snackbar = SnackBar(content: Text(message));
     Scaffold.of(context).showSnackBar(snackbar);
+  }
+
+  void _showToastMsg(BuildContext context,String message,Color color){
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: color,
+        textColor: Colors.white,
+        fontSize: 16,               
+    );
   }
 
   void updateListe(){
@@ -148,7 +156,7 @@ class _MyHomePageState extends State<Home> {
             icon: Icon(Icons.search),
             tooltip: 'Search',
             onPressed:() => {
-              Navigator.pushNamed(context, "/search2"),
+              Navigator.pushNamed(context, "/search"),
             }, 
           ),
           
