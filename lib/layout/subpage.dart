@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
+import 'package:percent_indicator/percent_indicator.dart';
 
 
 
@@ -24,430 +24,382 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
   //var f = new NumberFormat("####.00# ₺", "tr_TR");
   
   var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
-  TabController _tabController;
-  ScrollController _scrollViewController;
-  Color currentAppBarColor = Colors.black;
-  final appBarColors = [
-    Colors.black,
-    Colors.red,
-    Colors.orange,
-    Colors.green,
-    Colors.deepOrange,
-    Colors.cyan,
-    Colors.purple,
-  ];
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: appBarColors.length);
-    _scrollViewController =ScrollController();
-    _tabController.addListener(_handleTabSelection);
+  }
     
-  }
+  @override
+  void dispose() {
 
- void _handleTabSelection() {
-    setState(() {
-      currentAppBarColor = appBarColors[_tabController.index];
-      print('Sayfa değişti');
-    });
+    super.dispose();
   }
-
- @override
- void dispose() {
-   _tabController.dispose();
-   _scrollViewController.dispose();
-   super.dispose();
- }
 
   @override
   Widget build(BuildContext context) {
-   List<Choice> choices =  <Choice>[
-    Choice(
-     index:-1,
-     title: 'Tümü', 
-     stockCode: widget.stockCode, 
-     productName: widget.productName, 
-     img: widget.img, 
-     remoteImg: widget.remoteImg, 
-     remoteLink: widget.remoteLink,  
-     icon: Icons.add_shopping_cart, 
-     fiyat: 0,
-     ),
-   Choice(
-     index:0,
-     title: 'Bim', 
-     stockCode: widget.stockCode, 
-     productName: widget.productName, 
-     img: widget.img, 
-     remoteImg: widget.remoteImg, 
-     remoteLink: widget.remoteLink,  
-     icon: Icons.add_shopping_cart, 
-     fiyat: 12,
-     ),
-     Choice(
-     index:1,
-     title: 'Şok', 
-     stockCode: widget.stockCode, 
-     productName: widget.productName, 
-     img: widget.img, 
-     remoteImg: widget.remoteImg, 
-     remoteLink: widget.remoteLink, 
-     icon: Icons.add_shopping_cart, 
-     fiyat: 15,
-     ),
-     Choice(
-     index:2,
-     title: 'Pehlivanoğlu', 
-     stockCode: widget.stockCode, 
-     productName: widget.productName, 
-     img: widget.img, 
-     remoteImg: widget.remoteImg, 
-     remoteLink: widget.remoteLink, 
-     icon: Icons.add_shopping_cart, 
-     fiyat: 6.84,
-     ),
-     Choice(
-     index:3,
-     title: 'Migros', 
-     stockCode: widget.stockCode, 
-     productName: widget.productName, 
-     img: widget.img, 
-     remoteImg: widget.remoteImg, 
-     remoteLink: widget.remoteLink, 
-     icon: Icons.add_shopping_cart, 
-     fiyat: 13,
-     ),
-     Choice(
-     index:4,
-     title: 'A101', 
-     stockCode: widget.stockCode, 
-     productName: widget.productName, 
-     img: widget.img, 
-     remoteImg: widget.remoteImg, 
-     remoteLink: widget.remoteLink, 
-     icon: Icons.add_shopping_cart, 
-     fiyat: 21,
-     ),
-     Choice(
-     index:5,
-     title: 'Çimmar', 
-     stockCode: widget.stockCode, 
-     productName: widget.productName, 
-     img: widget.img, 
-     remoteImg: widget.remoteImg, 
-     remoteLink: widget.remoteLink, 
-     icon: Icons.add_shopping_cart, 
-     fiyat: 12.8,
-     ),
-];
-var liste = [0.00];
-choices.skip(1).forEach((element) {
-  liste.add(element.fiyat);
-});
-liste.removeAt(0);
-//choices2.sort((x,y)=>x.compareTo(y));
-
-/*tabbar with scroll */
-return Scaffold(
-      body: NestedScrollView(
-        controller: _scrollViewController,
-        headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              title: Text('Ürün Detay'),
-              pinned: true,
-              backgroundColor: currentAppBarColor,
-              floating: true,
-              forceElevated: boxIsScrolled,              
-              bottom: TabBar(                      
-                isScrollable: true,          
-                tabs: choices.map((Choice choice) {             
-                return Tab(
-                  text: choice.title,
-                  //icon: Icon(choice.icon),
-                );
-              }).toList(),
-                controller: _tabController,
-              ),
-            )
-          ];
-        },
-        body: TabBarView(                    
-           children: choices.map((Choice choice) {
-             if(choice.index>=0){
-                return Padding(
-                  padding: const EdgeInsets.all(16),                  
-                  child:ChoiceCard(choice: choice),                               
-                );
-             }
-             else{
-              return  Center(                 
-                 child:
-               Column(                 
-                 children: <Widget>[
-                    Container(                      
-                      alignment: Alignment.topCenter,          
-                      padding: EdgeInsets.all(20),
-                      child: Text(
-                        widget.productName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,              
-                        ),
-                      ),
-                      color: Color(0xcd000000),
-                      height: 56,
-                    ),
-                    FadeInImage.assetNetwork(                               
-                      placeholder: "assets/images/loading.gif",              
-                      image: 'http://likyone.tk/api/images/'+widget.img, 
-                      height: 200,
-                    ),
-                   Center(
-                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: choices.skip(1).map((choice) {  
-                          var style;                       
-                          if(choice.fiyat==liste.reduce(min)){                    
-                            style = TextStyle(
-                            color: Colors.green, 
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,                                       
-                            );
-                          }
-                          else
-                          {
-                            style = TextStyle(
-                            color: Colors.grey.shade700, 
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,                                       
-                            );
-                          } 
-                            return Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,                  
-                                children: <Widget>[                    
-                                  Text(choice.title,style: style,),
-                                  Text(":"),
-                                  Text(f.format(choice.fiyat),style: style,),
-                                ],
-                              )
-                            );
-                                        
-                        }).toList(), 
-                      ),
-                   )
-                 ],
-               ),               
-               
-              
-               );
-             }
-                
-           }).toList(),
-          controller: _tabController,
-        ),
-      ),
-      
-    
-);
-
-  /* tabBar Fakat dikey scroll yok */
-  /*return DefaultTabController(
-        length: choices.length,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Ürün Detay'),
-            backgroundColor: currentAppBarColor,
-            bottom: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabs: choices.map((Choice choice) {
-                return Tab(
-                  text: choice.title,
-                  //icon: Icon(choice.icon),
-                );
-              }).toList(),
-            ),
-          ),
-          body: TabBarView(
-            controller: _tabController,
-            children: choices.map((Choice choice) {
-             if(choice.index>=0){
-                return Padding(
-                  padding: const EdgeInsets.all(16),                  
-                  child:ChoiceCard(choice: choice),                               
-                );
-             }
-             else{
-               return Center(child: Column(
-                 mainAxisAlignment: MainAxisAlignment.center,
-                 children: choices.skip(1).map((choice) {  
-                   var style;                       
-                   if(choice.fiyat==liste.reduce(min)){                    
-                    style = TextStyle(
-                    color: Colors.green, 
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,                                       
-                    );
-                   }
-                   else
-                   {
-                    style = Theme.of(context).textTheme.display1;
-                   } 
-                    return Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,                  
-                        children: <Widget>[                    
-                          Text(choice.title,style: style,),
-                          Text(":"),
-                          Text(f.format(choice.fiyat),style: style,),
-                        ],
-                      )
-                    );
-                                 
-                 }).toList(), 
-               ),
-               );
-             }
-                
-           }).toList(),
-          ),
-        ),
-  );*/
-
+    TextEditingController yorumtxt = TextEditingController();
+    String txt;
+  
 /* Tabbarsız ilk düz sayfa versiyonu */
-   /* return new Scaffold(
+   return new Scaffold(
       appBar: AppBar(
-        title: Text('Ürün Detay'),      
+        title: Text("Ürün Detay"),      
       ),
-      body: Column(                
-        children: <Widget>[
-          Container(
-          alignment: Alignment.topCenter,          
-          padding: EdgeInsets.all(10),
-          child: Text(
-            widget.product_name,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,              
-            ),
-          ),
-          
-          color: Color(0xcd000000),
-          height: 56,
-        ),
-
-        FadeInImage.assetNetwork(                               
-          placeholder: "assets/images/loading.gif",
-          //image: "http://likyone.tk/api/images/"+data[index]["img"],                        
-          image: widget.remote_img, 
-        ),
-        Text("Stock Code: "+widget.stock_code),      
-        Container(
-          alignment: Alignment.bottomRight,
-          margin: EdgeInsets.fromLTRB(0, 10, 20, 0),
-          child: Text("12 TL",
-           style: TextStyle(
-              color: Colors.blue.shade600,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,              
-            ),
-          ),
-        )
-
-        ],
-      ),
-
-  
-    
-    );*/
-  }
-}
-
-
-class Choice {
-  const Choice({this.index,this.title, this.stockCode, this.productName, this.img, this.remoteImg, this.remoteLink, this.icon, this.fiyat});
-  final int index;
-  final String title;
-  final String stockCode;
-  final String productName;
-  final String img;
-  final String remoteImg;
-  final String remoteLink;
-  final IconData icon;
-  final double fiyat;
-
-}
-
-
-
-class ChoiceCard extends StatelessWidget {
-  const ChoiceCard({Key key, this.choice}) : super(key: key);
-  
-  final Choice choice;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme.of(context).textTheme.display1;
-    //var f = new NumberFormat("####.00# ₺", "tr_TR");
-    var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
-    /*return Card(
-      color: Colors.white,*/
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[            
-            //Icon(choice.icon, size: 128.0, color: textStyle.color),
+      body: Column( 
+        children:<Widget>[          
+        Expanded(
+        child: ListView(               
+          padding: EdgeInsets.all(10),          
+          children: <Widget>[              
             Container(
               alignment: Alignment.topCenter,          
               padding: EdgeInsets.all(10),
               child: Text(
-                choice.productName,
+                widget.productName,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 15,              
                 ),
-              ),
+              ),              
               color: Color(0xcd000000),
               height: 56,
             ),
             FadeInImage.assetNetwork(                               
-              placeholder: "assets/images/loading.gif",              
-              image: 'http://likyone.tk/api/images/'+choice.img, 
-              height: 200,
+              placeholder: "assets/images/loading.gif",
+              //image: "http://likyone.tk/api/images/"+data[index]["img"],                        
+              image: widget.remoteImg
             ),
-            Text("Stock Code: "+choice.stockCode),  
-            Text(choice.title, style: textStyle),    
+            /*Text("Stock Code: "+widget.stockCode),      
             Container(
               alignment: Alignment.bottomRight,
               margin: EdgeInsets.fromLTRB(0, 10, 20, 0),
-              child: Text(f.format(choice.fiyat),
+              child: Text(f.format(12),
               style: TextStyle(
-                  color: Colors.grey.shade600,
-                  //fontWeight: FontWeight.bold,
-                  fontSize: 37,              
-                ),
-              ),                           
-            ),
-            Expanded(
-              child: Container(
-                alignment: Alignment.bottomRight,
-                margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
-                child:   FloatingActionButton(              
-                  child: Icon(choice.icon),
-                  onPressed: () {
-                  }
+                  color: Colors.blue.shade600,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,              
                 ),
               ),
-            )
+            )*/
+            /* Tüketici Memnunmu başla */
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Text("Tüketici Memnun mu ?",
+                textAlign: TextAlign.center,
+                ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                children: <Widget>[
+                  new LinearPercentIndicator(
+                    width: MediaQuery.of(context).size.width - 110,
+                    lineHeight: 20.0,
+                    animation: true,
+                    animationDuration: 1500,
+                    percent: 0.8,
+                    center: Text("Çok Memnunum"),
+                    linearStrokeCap: LinearStrokeCap.roundAll,
+                    progressColor: Colors.yellow.shade600,
+                    leading: new Text("😍 " ,style: TextStyle(fontSize: 25),),
+                    trailing: new Text(" 80%"),
+                  ),
+                  new LinearPercentIndicator(
+                    width: MediaQuery.of(context).size.width - 110,
+                    lineHeight: 20.0,
+                    animation: true,
+                    animationDuration: 1500,
+                    percent: 0.65,
+                    center: Text("Memnunum"),
+                    linearStrokeCap: LinearStrokeCap.roundAll,
+                    progressColor: Colors.green,
+                    leading: new Text("😊 " ,style: TextStyle(fontSize: 25),),
+                    trailing: new Text(" 65%"),
+                  ),
+                  new LinearPercentIndicator(
+                    width: MediaQuery.of(context).size.width - 110,
+                    lineHeight: 20.0,
+                    animation: true,
+                    animationDuration: 1500,
+                    percent: 0.75,
+                    center: Text("İdare Eder"),
+                    linearStrokeCap: LinearStrokeCap.roundAll,
+                    progressColor: Colors.blue,
+                    leading: new Text("😐 " ,style: TextStyle(fontSize: 25),),
+                    trailing: new Text(" 75%"),
+                  ),
+                  new LinearPercentIndicator(
+                    width: MediaQuery.of(context).size.width - 110,
+                    lineHeight: 20.0,
+                    animation: true,
+                    animationDuration: 1500,
+                    percent: 0.9,
+                    center: Text("Memnun Değilim"),
+                    linearStrokeCap: LinearStrokeCap.roundAll,
+                    progressColor: Colors.red,
+                    leading: new Text("☹️ " ,style: TextStyle(fontSize: 25),),
+                    trailing: new Text(" 90%"),
+                  )
+                ],
+              ),
+            ),
+            /*Tüketici memnun mu bitir */
             
-                       
-          ],
-        //),
-      
+            /* Butonlar Başla*/
+              RaisedButton(
+                onPressed: () {},
+                child: const Text('Alışveriş Listeme Ekle'),
+              ),
+              RaisedButton(
+                onPressed: () {},
+                child: const Text('Sık Alınanlara Ekle'),
+              ),
+              RaisedButton(                
+                onPressed: () {},
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[                  
+                  Text("Takip Et"),                                    
+                  Text("(Fiyatı Düşünce Haber Ver)",style: TextStyle(fontSize: 12),),                  
+                ],),
+              ),
+              /*Butonlar Bitir */      
+
+              /*Marketler Fiyat Listesi Başla */  
+              Container(
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Text("Satış Yapan Marketler",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10), 
+                child: Column(                                               
+                  children: <Widget>[                
+                    ListTile(                     
+                      leading: Image.asset("assets/images/a101.png",width: 50,),                
+                      title: Text(f.format(14.25)),
+                      subtitle: Text("A101"),                                              
+                    ),
+                    ListTile(                      
+                      leading: Image.asset("assets/images/carrefour.png",width: 50,),                
+                      title: Text(f.format(15.30)),
+                      subtitle: Text("Carrefour"),                                              
+                    ),
+                    ListTile(                      
+                      leading: Image.asset("assets/images/migros.png",width: 50,),                
+                      title: Text(f.format(12.45)),
+                      subtitle: Text("Migros"),                                              
+                    ),                    
+                  ],              
+                ),
+              ),
+              /*Marketler Fiyat Listesi Bitir */  
+
+              /* Tüketici Yorumları Başla */
+              Container(
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 15),
+              child: Text("Kullanıcı Yorumları",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+                ),
+              ),
+                ListTile(                     
+                      //leading: Image.network("https://randomuser.me/api/portraits/women/28.jpg",width: 50,),                 
+                      leading: ClipRRect(
+                          borderRadius: new BorderRadius.circular(50.0),                          
+                          child: Image.network(
+                              "https://randomuser.me/api/portraits/women/28.jpg",                              
+                              width: 50.0,
+                          ),
+                      ),
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                            Text("Özge",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13),),
+                            Text("Harika Bir Ürün Ailecek Severek Tüketiyoruz",style: TextStyle(fontSize: 12),),
+                        ],
+                      ),                        
+                      subtitle: Column(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Text("12 Dk",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            Text("23 Beğeni",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            GestureDetector(
+                              child: Text("Yanıtla",style: TextStyle(fontSize: 10),),
+                              onTap: (){
+                                print("Yanıtla Butonuna Basıldı");
+                              },
+                            )
+                          ],)                          
+                        ],
+                      ),
+                      trailing: Icon(Icons.favorite_border),                                              
+                ),
+                ListTile(                     
+                      //leading: Image.network("https://randomuser.me/api/portraits/women/28.jpg",width: 50,),                 
+                      leading: ClipRRect(
+                          borderRadius: new BorderRadius.circular(50.0),                          
+                          child: Image.network(
+                              "https://randomuser.me/api/portraits/men/82.jpg",                              
+                              width: 50.0,
+                          ),
+                      ),
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                            Text("Altan",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13),),
+                            Text("Beklediğim gibi değildi tam bir hayal kırıklığı",style: TextStyle(fontSize: 12),),
+                        ],
+                      ),                        
+                      subtitle: Column(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Text("1 Saat",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            Text("0 Beğeni",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            GestureDetector(
+                              child: Text("Yanıtla",style: TextStyle(fontSize: 10),),
+                              onTap: (){
+                                print("Yanıtla butonuna basıldı");
+                              },
+                            )
+                          ],)                          
+                        ],
+                      ),
+                      trailing: Icon(Icons.favorite_border),                                              
+                ),
+                ListTile(                     
+                      //leading: Image.network("https://randomuser.me/api/portraits/women/28.jpg",width: 50,),                 
+                      leading: ClipRRect(
+                          borderRadius: new BorderRadius.circular(50.0),                          
+                          child: Image.network(
+                              "https://randomuser.me/api/portraits/women/50.jpg",                              
+                              width: 50.0,
+                          ),
+                      ),
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                            Text("Merve",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13),),
+                            Text("Bir sonraki indirimde alıcam",style: TextStyle(fontSize: 12),),
+                        ],
+                      ),                        
+                      subtitle: Column(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Text("2 Gün",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            Text("14 Beğeni",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            GestureDetector(
+                              child: Text("Yanıtla",style: TextStyle(fontSize: 10),),
+                              onTap: (){
+                                print("Yanıtla Butonuna Basıldı");
+                              },
+                            )
+                          ],)                          
+                        ],
+                      ),
+                      trailing: Icon(Icons.favorite_border),                                              
+                ),                
+                ListTile(                     
+                      //leading: Image.network("https://randomuser.me/api/portraits/women/28.jpg",width: 50,),                 
+                      leading: ClipRRect(
+                          borderRadius: new BorderRadius.circular(50.0),                          
+                          child: Image.network(
+                              "https://randomuser.me/api/portraits/women/84.jpg",                              
+                              width: 50.0,
+                          ),
+                      ),
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                            Text("Buse",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 13),),
+                            Text("Bugün gidip almayı düşündüğüm ürün",style: TextStyle(fontSize: 12),),
+                        ],
+                      ),                        
+                      subtitle: Column(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(children: <Widget>[
+                            Text("1 Hafta",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            Text("9 Beğeni",style: TextStyle(fontSize: 10,),),
+                            Padding(padding: EdgeInsets.fromLTRB(20,0,0,0)),
+                            GestureDetector(
+                              child: Text("Yanıtla",style: TextStyle(fontSize: 10),),
+                              onTap: (){
+                                print("Yanıtla Butonuna Basıldı");
+                              },
+                            )
+                          ],)                          
+                        ],
+                      ),
+                      trailing: Icon(Icons.favorite_border),                                              
+                ),
+              /* Tüketici Yorumları Bitir */
+              /* Yorum Yap Başla */
+              ListTile(
+                leading: Icon(Icons.send),
+                title:  TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Yorum Yazın'
+                  ),         
+                  textInputAction: TextInputAction.send,         
+                  autocorrect: false,
+                  autofocus: false,
+                  controller: yorumtxt,
+                  onSubmitted: (val){                                   
+                    print(txt+" Yorumu gönderilecek");
+                  },
+                  onChanged: (val){                                     
+                      txt = val;                    
+                  },              
+                ),
+                trailing: GestureDetector(
+                  child: Text("Gönder",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap: (){
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                        //var txt = yorumtxt.text.toString();
+                        print(txt+" Yorumu Gönderilecek");
+                    },
+                ),
+              )
+               
+              /*Yorum Yap Bitir */
+            ],
+          ),
+        ),
+        ],
+      ),
     );
-  } 
+  }
 }

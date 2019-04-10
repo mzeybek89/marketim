@@ -249,7 +249,7 @@ class _MyHomePageState extends State<Home> {
                 accountName: Text('Mehmet Zeybek'),                
                 accountEmail: Text('mehmetzeybek@icloud.com'),
                 currentAccountPicture:
-                Image.network('https://bit.ly/2U0JsMd'),
+                Image.asset("assets/images/profile.jpg"),
                 decoration: BoxDecoration(color: Colors.blueAccent),              
              ),
              Expanded(

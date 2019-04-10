@@ -95,7 +95,7 @@ class _Search2PageState extends State<Search2> {
                     hintText: "Search",
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
             Expanded(

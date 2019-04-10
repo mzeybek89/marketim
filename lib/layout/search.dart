@@ -30,16 +30,19 @@ class _SearchPageState extends State<Search> {
     Future loadUrunler() async {
     try {
   
-     getApplicationDocumentsDirectory().then((Directory directory) {
-        dir = directory;
-        jsonFile = new File(dir.path + "/" + fileName);
-        fileExists = jsonFile.existsSync();
-        if (fileExists) this.setState(() => fileContent = json.decode(jsonFile.readAsStringSync()));
-        var categoryJson = fileContent;
-        for (int i = 0; i < categoryJson.length; i++) {
-          duplicateItems.add(new Urunler.fromJson(categoryJson[i]));
-        }
-      });
+      Directory directory = await getApplicationDocumentsDirectory();
+      dir = directory;
+      jsonFile = new File(dir.path + "/" + fileName);
+      fileExists = jsonFile.existsSync();
+      if (fileExists) {
+        fileContent = json.decode( jsonFile.readAsStringSync());
+      }
+      var categoryJson = fileContent;
+      for (int i = 0; i < categoryJson.length; i++) { 
+        duplicateItems.add(new Urunler.fromJson(categoryJson[i]));
+      }
+      
+     
 
       /*final String url = "http://likyone.tk/api/liste.php?s=0&all=true";
       //String jsonString = await rootBundle.loadString('assets/players.json');
@@ -52,10 +55,10 @@ class _SearchPageState extends State<Search> {
     } catch (e) {
       print(e);
     }
-        items.addAll(duplicateItems);
-        setState(() {
-          _progress=false;
-        });
+      items.addAll(duplicateItems);
+      setState(() {
+        _progress=false;
+      });
 
   }
 
@@ -87,7 +90,7 @@ class _SearchPageState extends State<Search> {
     } else {
       setState(() {
         items.clear();
-        //items.addAll(duplicateItems);
+        items.addAll(duplicateItems);
       });
     }
 
@@ -115,7 +118,7 @@ class _SearchPageState extends State<Search> {
                     hintText: "Search",
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
             _progress == true?const CircularProgressIndicator():
