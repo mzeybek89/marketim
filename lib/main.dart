@@ -20,7 +20,7 @@ Future main() async {
     DeviceOrientation.portraitDown
   ]);   /*yatay çevirmeyi kapatma*/
 
-  final path = (await getApplicationDocumentsDirectory()).path;
+  /*final path = (await getApplicationDocumentsDirectory()).path;
 
   final myDataResource = HttpNetworkResource<List>(
     url: 'http://likyone.tk/api/liste.php?s=0&all=true',
@@ -30,7 +30,7 @@ Future main() async {
     strategy: CacheStrategy.cacheFirst,
   );
 
-  myDataResource.get();
+  myDataResource.get();*/
 
   runApp(new MaterialApp(
     title: "Marketim",
