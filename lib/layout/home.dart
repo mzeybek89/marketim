@@ -31,7 +31,7 @@ class _MyHomePageState extends State<Home> {
 
   Future loadUrunler(String query) async { //for barcode_scan
     try {
-      final String url = "http://likyone.tk/api/detay.php?code="+query;
+      final String url = "http://zeybek.tk/api/detay.php?code="+query;
       //String jsonString = await rootBundle.loadString('assets/players.json');
       var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
       Map<String, dynamic> gelen = json.decode(res.body);
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<Home> {
   }
 
   Future<String> getSWData() async { // anasayfa ürünler load
-    final String url = "http://likyone.tk/api/liste.php?s=0";
+    final String url = "http://zeybek.tk/api/liste.php?s=0";
     var res =  await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
 
     setState(() {
@@ -193,7 +193,7 @@ class _MyHomePageState extends State<Home> {
                     children: [
                       FadeInImage.assetNetwork(                               
                         placeholder: "assets/images/loading.gif",
-                        image: "http://likyone.tk/api/images/"+data[index]["img"],                          
+                        image: "http://zeybek.tk/api/images/"+data[index]["img"],                          
                         //image: data[index]["remote_img"], 
                       ),
                       Container(                                                      

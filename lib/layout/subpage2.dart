@@ -200,7 +200,7 @@ return Scaffold(
                     ),
                     FadeInImage.assetNetwork(                               
                       placeholder: "assets/images/loading.gif",              
-                      image: 'http://likyone.tk/api/images/'+widget.img, 
+                      image: 'http://zeybek.tk/api/images/'+widget.img, 
                       height: 200,
                     ),
                    Center(
@@ -342,7 +342,7 @@ return Scaffold(
 
         FadeInImage.assetNetwork(                               
           placeholder: "assets/images/loading.gif",
-          //image: "http://likyone.tk/api/images/"+data[index]["img"],                        
+          //image: "http://zeybek.tk/api/images/"+data[index]["img"],                        
           image: widget.remote_img, 
         ),
         Text("Stock Code: "+widget.stock_code),      
@@ -416,7 +416,7 @@ class ChoiceCard extends StatelessWidget {
             ),
             FadeInImage.assetNetwork(                               
               placeholder: "assets/images/loading.gif",              
-              image: 'http://likyone.tk/api/images/'+choice.img, 
+              image: 'http://zeybek.tk/api/images/'+choice.img, 
               height: 200,
             ),
             Text("Stock Code: "+choice.stockCode),  

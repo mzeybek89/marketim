@@ -19,7 +19,7 @@ class _Search2PageState extends State<Search2> {
 
   Future loadUrunler(String query) async {
     try {
-      final String url = "http://likyone.tk/api/liste.php?q="+query;
+      final String url = "http://zeybek.tk/api/liste.php?q="+query;
       //String jsonString = await rootBundle.loadString('assets/players.json');
       var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
       List parsedJson = json.decode(res.body);

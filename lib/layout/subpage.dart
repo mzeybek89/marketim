@@ -67,7 +67,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
             ),*/
             FadeInImage.assetNetwork(                               
               placeholder: "assets/images/loading.gif",
-              //image: "http://likyone.tk/api/images/"+data[index]["img"],                        
+              //image: "http://zeybek.tk/api/images/"+data[index]["img"],                        
               image: widget.remoteImg
             ),
             /*Text("Stock Code: "+widget.stockCode),      

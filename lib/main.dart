@@ -23,7 +23,7 @@ Future main() async {
   /*final path = (await getApplicationDocumentsDirectory()).path;
 
   final myDataResource = HttpNetworkResource<List>(
-    url: 'http://likyone.tk/api/liste.php?s=0&all=true',
+    url: 'http://zeybek.tk/api/liste.php?s=0&all=true',
     //parser: (contents) => List.fromJson(contents),
     cache: FileResource(File('$path/urunler.json')),
     maxAge: Duration(minutes: 60),

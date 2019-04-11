@@ -44,7 +44,7 @@ class _SearchPageState extends State<Search> {
       
      
 
-      /*final String url = "http://likyone.tk/api/liste.php?s=0&all=true";
+      /*final String url = "http://zeybek.tk/api/liste.php?s=0&all=true";
       //String jsonString = await rootBundle.loadString('assets/players.json');
       var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
       List parsedJson = json.decode(res.body);
