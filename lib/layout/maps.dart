@@ -69,7 +69,7 @@ class _MapsPageState extends State<Maps> {
       ),
       body: GoogleMap(
         //cameraTargetBounds: CameraTargetBounds.unbounded,
-        myLocationEnabled: false,        
+        myLocationEnabled: true,        
         mapType: MapType.normal,
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {

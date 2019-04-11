@@ -44,7 +44,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
 /* Tabbarsız ilk düz sayfa versiyonu */
    return new Scaffold(
       appBar: AppBar(
-        title: Text(widget.productName),      
+        title: Text("Ürün Detay"),      
       ),
       body: Column( 
         children:<Widget>[          
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
         child: ListView(               
           padding: EdgeInsets.all(10),          
           children: <Widget>[              
-            /*Container(
+            Container(
               alignment: Alignment.topCenter,          
               padding: EdgeInsets.all(10),
               child: Text(
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
               ),              
               color: Color(0xcd000000),
               height: 56,
-            ),*/
+            ),
             FadeInImage.assetNetwork(                               
               placeholder: "assets/images/loading.gif",
               //image: "http://zeybek.tk/api/images/"+data[index]["img"],                        
