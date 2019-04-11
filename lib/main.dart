@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'layout/home.dart';
 import 'layout/search2.dart';
 import 'layout/search.dart';
+import 'layout/maps.dart';
 
 
 
@@ -46,6 +47,7 @@ Future main() async {
       "/":(context) => Home(),
       "/search2":(context) => Search2(),
       "/search":(context) => Search(),
+      "/maps":(context)=>Maps(),
  
     },
   ));

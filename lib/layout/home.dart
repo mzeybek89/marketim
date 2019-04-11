@@ -250,7 +250,15 @@ class _MyHomePageState extends State<Home> {
                 accountEmail: Text('mehmetzeybek@icloud.com'),
                 currentAccountPicture:
                 Image.asset("assets/images/profile.jpg"),
-                decoration: BoxDecoration(color: Colors.blueAccent),              
+                decoration: BoxDecoration(color: Colors.blueAccent),  
+                otherAccountsPictures: <Widget>[
+                  GestureDetector(
+                    child:Icon(Icons.map,color: Colors.white,),
+                    onTap: (){
+                      Navigator.pushNamed(context, "/maps");
+                    },
+                  ),
+                ],            
              ),
              Expanded(
                child: ListView.builder(
