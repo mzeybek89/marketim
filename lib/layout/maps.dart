@@ -34,8 +34,7 @@ class _MapsPageState extends State<Maps> {
 
   Future LocationInfo() async{
     
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();  
-    dbFuture.then((database){     
+  
       Future<List<Konum>> konumFuture = databaseHelper.getKonum();
       konumFuture.then((konum){
           setState(() {
@@ -43,9 +42,7 @@ class _MapsPageState extends State<Maps> {
             print("Konum idsi ==> " + konum[0].id.toString());
           });
          getLocation();
-        });        
-    });
-    
+        });         
   }
 
   Future getLocation() async{
@@ -78,9 +75,7 @@ class _MapsPageState extends State<Maps> {
          _discreteValue = this.konum[0].radius;
        });
     }
-     
-
-
+    
       setState(() {
           _myLoc = CameraPosition(
             target: LatLng(lat, lng),
@@ -90,6 +85,38 @@ class _MapsPageState extends State<Maps> {
 
       updateCam();
   }
+
+Future getLocationReal()async{
+  loc.LocationData currentLocation;
+  await location.changeSettings(
+    accuracy: loc.LocationAccuracy.HIGH,
+    interval: 1000,
+  );  
+  // Platform messages may fail, so we use a try/catch PlatformException.
+  try {
+    currentLocation = await location.getLocation();      
+    
+    
+    setState(() {           
+      lat = currentLocation.latitude;
+      lng = currentLocation.longitude;
+    });
+  
+  } on PlatformException catch (e) {
+    if (e.code == 'PERMISSION_DENIED') {
+      //error = 'Permission denied';
+    } 
+    currentLocation = null;
+  }
+  setState(() {
+          _myLoc = CameraPosition(
+            target: LatLng(lat, lng),
+            zoom: 13,
+          );
+      });
+
+      updateCam();
+}
 
   Future updateCam() async{
     final GoogleMapController controller = await _controller.future;
@@ -203,7 +230,7 @@ void _onCameraMove(CameraPosition position) async{
                             ),
                             child: Icon(Icons.location_searching,color:Colors.grey),
                         ),
-                        onTap: ()=> getLocation(),
+                        onTap: ()=> getLocationReal(),
                       ),
                     ),
                   ),

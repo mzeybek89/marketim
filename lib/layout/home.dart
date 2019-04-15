@@ -117,8 +117,7 @@ class _MyHomePageState extends State<Home> {
   }
 
   void updateListe(){
-     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-     dbFuture.then((database){
+   
        Future<List<Liste>> listeFuture = databaseHelper.getListe();
        listeFuture.then((liste){
          setState(() {
@@ -126,7 +125,7 @@ class _MyHomePageState extends State<Home> {
            this.count = liste.length;
          });
        });
-     });
+   
   }
   
   @override
