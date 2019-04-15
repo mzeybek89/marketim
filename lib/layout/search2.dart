@@ -28,8 +28,7 @@ class _Search2PageState extends State<Search2> {
       for (int i = 0; i < categoryJson.length; i++) {
         setState(() {
           urunler.add(new Urunler.fromJson(categoryJson[i]));  
-        });
-        
+        });        
       }
     } catch (e) {
       print(e);

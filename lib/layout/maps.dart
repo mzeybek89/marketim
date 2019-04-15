@@ -9,13 +9,7 @@ import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/utils/database_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
-import "package:google_maps_webservice/geocoding.dart";
-
-
-
-
-
-
+import "package:google_maps_webservice/geocoding.dart" as ws;
 
 class Maps extends StatefulWidget  {
   Maps({Key key}) : super(key: key);
@@ -26,7 +20,18 @@ class Maps extends StatefulWidget  {
 
 class _MapsPageState extends State<Maps> {
   Completer<GoogleMapController> _controller = Completer();
-  var location = new loc.Location(); 
+  TextEditingController txtController = TextEditingController();
+  loc.Location location = new loc.Location(); 
+  var searchRes = false;
+  var yerler = List<Yerler>();
+  double lat,lng;
+  LatLng _lastMapPosition = LatLng(0, 0);
+  CameraPosition _myLoc = CameraPosition(
+    target: LatLng(38.467866199999996, 27.2184286),
+    zoom: 13,
+  );
+  
+
   Future LocationInfo() async{
      
     loc.LocationData currentLocation;
@@ -37,15 +42,19 @@ class _MapsPageState extends State<Maps> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       currentLocation = await location.getLocation();      
-      final CameraPosition _myLoc = CameraPosition(
-        target: LatLng(currentLocation.latitude, currentLocation.longitude),
-        zoom: 11,
-      );
-      
-      final GoogleMapController controller = await _controller.future;
-      controller.animateCamera(CameraUpdate.newCameraPosition(_myLoc));
-
        
+      
+       setState(() {
+         _myLoc = CameraPosition(
+            target: LatLng(currentLocation.latitude, currentLocation.longitude),
+            zoom: 13,
+          );
+
+         lat = currentLocation.latitude;
+         lng = currentLocation.longitude;
+       });
+
+       updateCam();
     
     } on PlatformException catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
@@ -55,12 +64,17 @@ class _MapsPageState extends State<Maps> {
     }
   }
 
+  Future updateCam() async{
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_myLoc));
+  }
+
   Future locationInfoDubug() async{
     var latitude = 38.467441;
     var longitude = 27.218683;    
     final CameraPosition _myLoc = CameraPosition(
         target: LatLng(latitude, longitude),
-        zoom: 11,
+        zoom: 13,
     );
       
     final GoogleMapController controller = await _controller.future;
@@ -69,28 +83,50 @@ class _MapsPageState extends State<Maps> {
     
   } 
 
-  Future getPlaces() async{    
-    final geocoding = new GoogleMapsGeocoding(apiKey: "AIzaSyBZJ7I2PmkUNq47W7bl6pZyfMU-ixfuEmU");
-    GeocodingResponse response = await geocoding.searchByAddress("edremit");
-    print(response.results.length);  
-    print(response.results[0].formattedAddress);
-    print(response.results[0].geometry.location.lat);
-    print(response.results[0].geometry.location.lng);    
+  Future getPlaces(String adres) async{    
     
-    GeocodingResponse res = await geocoding.searchByLocation(response.results[0].geometry.location);
-    print(res.results[2].formattedAddress);
+    final geocoding = new ws.GoogleMapsGeocoding(apiKey: "AIzaSyBZJ7I2PmkUNq47W7bl6pZyfMU-ixfuEmU");
+    ws.GeocodingResponse response = await geocoding.searchByAddress(adres,language: "tr",region: "tr");        
+    if(response.results.length>0)
+    {    
+      for (int i = 0; i < response.results.length; i++) {
+        
+        setState(() {
+          yerler.clear();
+          searchRes = true;
+          yerler.add(new Yerler(
+            title: response.results[i].formattedAddress,
+            lat: response.results[i].geometry.location.lat,
+            lng: response.results[i].geometry.location.lng));  
+        });        
+      }
+    }
+    else
+    {
+      setState(() {
+        searchRes = false;
+      });
+    }
+ 
   }
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 11,
-  );
 
-  void camStop(){
-    location.onLocationChanged().listen((LocationData currentLocation) {            
-      //print(currentLocation.latitude);
-      //print(currentLocation.longitude);
-    });    
+  Future camStop(ws.Location loc)async{    
+    final geocoding = new ws.GoogleMapsGeocoding(apiKey: "AIzaSyBZJ7I2PmkUNq47W7bl6pZyfMU-ixfuEmU");  
+    ws.GeocodingResponse res = await geocoding.searchByLocation(loc);
+    String adres = res.results[3].formattedAddress.toString();
+    setState(() {
+      txtController.text=adres;
+      txtController.selection = TextSelection.fromPosition(
+        new TextPosition(offset:0),
+      );
+    });      
+  }
+
+void _onCameraMove(CameraPosition position) async{    
+    setState(() {      
+      _lastMapPosition = position.target;  
+    });
   }
 
   @override
@@ -103,61 +139,64 @@ class _MapsPageState extends State<Maps> {
       Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height-250,
-        padding: EdgeInsets.all(15),
-        child:Stack(
+        //padding: EdgeInsets.all(15),        
+        child:Stack(        
           children:<Widget>[
-            GoogleMap(
+            GoogleMap(                        
               tiltGesturesEnabled: true,
               //cameraTargetBounds: CameraTargetBounds.unbounded,
               myLocationEnabled: false,                 
-              mapType: MapType.normal,
-              onCameraIdle: ()=>camStop(),
-              initialCameraPosition: _kGooglePlex,
+              mapType: MapType.normal,              
+              onCameraIdle: ()=>camStop(ws.Location(_lastMapPosition.latitude,_lastMapPosition.longitude)),
+              onCameraMove: _onCameraMove,
+              initialCameraPosition: _myLoc,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);          
-              },        
+              },                      
             ),
             Padding(
-              padding: const EdgeInsets.all(5),
-              child: Align(
+              padding: const EdgeInsets.all(15),              
+              child: Align(                
                 alignment: Alignment.topCenter,
-                child: TextField(                  
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Yer Ara",
-                    fillColor: Colors.white,
-                  )                 
+                child: Container(
+                  height: 30,
+                    child: _txtField(),
                 ),
-                /*child: FloatingActionButton(                  
-                  onPressed: () => locationInfoDubug(),
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  backgroundColor: Colors.green,
-                  child: const Icon(Icons.location_on, size: 30.0),
-                ),*/
               ),
-            ),
+            ),           
             Padding(
               padding: const EdgeInsets.all(5),
               child: Align(
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: ()=>locationInfoDubug(),
-                  child: Icon(Icons.location_on,color: Colors.red, size: 40,),
-                ),
-                /*child: FloatingActionButton(                  
-                  onPressed: () => locationInfoDubug(),
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  backgroundColor: Colors.green,
-                  child: const Icon(Icons.location_on, size: 30.0),
-                ),*/
+                alignment: Alignment.center,                
+                child: Icon(Icons.location_on,color: Colors.red, size: 40,),                
               ),
             ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 80, 20, 0),            
+              //padding: EdgeInsets.all(5),
+              child: Align(
+                alignment: Alignment.topRight,                
+                child: GestureDetector(
+                  child: Container(                
+                    width: 40,
+                    height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white,     
+                        borderRadius: new BorderRadius.circular(5.0),                    
+                      ),
+                      child: Icon(Icons.location_searching,color:Colors.grey),
+                  ),
+                  onTap: ()=> locationInfoDubug(),
+                ),
+              ),
+            ),
+             searchList(context),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: (){
-          getPlaces();
+          //getPlaces();
         },
         label: Text('Güncelle'),
         icon: Icon(Icons.save),
@@ -171,5 +210,128 @@ class _MapsPageState extends State<Maps> {
     super.initState();
     LocationInfo();
   }
+
+  Widget _txtField(){
+    return searchRes ? 
+      TextField(                  
+        decoration: new InputDecoration(
+          hintText: "Adres Ara",
+          fillColor: Colors.white,
+          filled: true,                        
+          //contentPadding: EdgeInsets.all(20),                        
+          border: new OutlineInputBorder(                                                                            
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(15),
+              topRight: Radius.circular(15),
+            ), 
+          ),
+            prefixIcon: Icon(Icons.search),  
+            suffixIcon: GestureDetector(
+              child: Icon(Icons.cancel),
+              onTap: (){
+                setState(() {
+                  searchRes=false;
+                  txtController.text="";
+                });
+              },
+            )      
+        ),
+        style: TextStyle(fontSize: 12,),
+        onChanged: (String txt) {
+            getPlaces(txt);
+        },
+        controller: txtController,
+        
+        
+      )
+      :
+      TextField(                                  
+        decoration: new InputDecoration(
+          hintText: "Adres Ara",
+          fillColor: Colors.white,
+          filled: true,                         
+          border: new OutlineInputBorder(                          
+          borderRadius: new BorderRadius.circular(15.0),                                                                   
+          ),          
+           prefixIcon: Icon(Icons.search),  
+            suffixIcon: GestureDetector(
+              child: Icon(Icons.cancel),
+              onTap: (){
+                setState(() {
+                  searchRes=false;
+                  txtController.text="";
+                });
+              },
+            )           
+        ),        
+        style: TextStyle(fontSize: 12,),
+        onChanged: (String txt) {
+            getPlaces(txt);
+        },              
+        controller: txtController, 
+      );
+
+  }
+
+  Widget searchList(BuildContext context){
+    return searchRes ? 
+      Padding(              
+        padding: const EdgeInsets.fromLTRB(16, 69, 16, 15),                            
+        child: Align(
+          alignment: Alignment.topCenter,               
+          child: Container(                                  
+            //color: Colors.white,
+            decoration: new BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15),
+              ),               
+            ),
+            child:ListView.builder(
+              padding: EdgeInsets.all(5),
+               shrinkWrap: true,
+                itemCount: yerler.length,
+                itemBuilder: (context, index) {
+                  return ListTile(                    
+                    //leading: Icon(Icons.place),                    
+                    title: Text(yerler[index].title,style: TextStyle(fontSize: 14)),
+                    subtitle: Text(yerler[index].lat.toString()+", "+yerler[index].lng.toString(),style: TextStyle(fontSize: 10)),
+                    onTap: (){  
+                      setState(() {
+                        _myLoc = CameraPosition(
+                          target: LatLng(yerler[index].lat, yerler[index].lng),
+                          zoom: 13,
+                        );
+                        _lastMapPosition = _myLoc.target;
+                        txtController.text=yerler[index].title;
+                        searchRes=false;                       
+                      });     
+                      updateCam();                                                         
+                    },
+                  );
+                },
+            )
+          ),
+        ),
+      ) :
+      Padding(padding: EdgeInsets.all(0));
+  }
+
+}
+
+
+
+class Yerler {
+  String title;
+  double lat;
+  double lng;
+  
+  Yerler({
+    this.title,
+    this.lat,
+    this.lng
+  });
+
 
 }
