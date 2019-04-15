@@ -186,7 +186,7 @@ void _onCameraMove(CameraPosition position) async{
                       ),
                       child: Icon(Icons.location_searching,color:Colors.grey),
                   ),
-                  onTap: ()=> locationInfoDubug(),
+                  onTap: ()=> LocationInfo(),
                 ),
               ),
             ),
@@ -194,11 +194,12 @@ void _onCameraMove(CameraPosition position) async{
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,    
+      floatingActionButton: FloatingActionButton.extended(                
         onPressed: (){
           //getPlaces();
         },
-        label: Text('Güncelle'),
+        label: Text('Konum Güncelle'),
         icon: Icon(Icons.save),
       ),
     );
@@ -227,7 +228,7 @@ void _onCameraMove(CameraPosition position) async{
           ),
             prefixIcon: Icon(Icons.search),  
             suffixIcon: GestureDetector(
-              child: Icon(Icons.cancel),
+              child: Icon(Icons.cancel,color: Colors.grey,size: 20,),
               onTap: (){
                 setState(() {
                   searchRes=false;
@@ -240,9 +241,7 @@ void _onCameraMove(CameraPosition position) async{
         onChanged: (String txt) {
             getPlaces(txt);
         },
-        controller: txtController,
-        
-        
+        controller: txtController,                
       )
       :
       TextField(                                  
@@ -255,7 +254,7 @@ void _onCameraMove(CameraPosition position) async{
           ),          
            prefixIcon: Icon(Icons.search),  
             suffixIcon: GestureDetector(
-              child: Icon(Icons.cancel),
+              child: Icon(Icons.cancel,color: Colors.grey,size: 20,),
               onTap: (){
                 setState(() {
                   searchRes=false;
@@ -307,6 +306,7 @@ void _onCameraMove(CameraPosition position) async{
                         txtController.text=yerler[index].title;
                         searchRes=false;                       
                       });     
+                      FocusScope.of(context).requestFocus(new FocusNode());
                       updateCam();                                                         
                     },
                   );
