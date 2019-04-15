@@ -2,7 +2,7 @@ class Konum{
   int _id;
   double _lat;
   double _lng;
-  int _radius;
+  double _radius;
   
   Konum(this._lat,this._lng,this._radius);
   Konum.withId(this._id,this._lat,this._lng,this._radius);
@@ -10,7 +10,7 @@ class Konum{
   int get id => _id;
   double get lat => _lat;
   double get lng => _lng;
-  int get radius => _radius;
+  double get radius => _radius;
   
 
   set lat(double newlat)
@@ -29,7 +29,7 @@ class Konum{
     }
   } 
 
-  set radius(int newradius)
+  set radius(double newradius)
   {
     if(newradius.toString().length>0)
     {

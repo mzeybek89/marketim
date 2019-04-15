@@ -38,7 +38,7 @@ class _MapsPageState extends State<Maps> {
       Future<List<Konum>> konumFuture = databaseHelper.getKonum();
       konumFuture.then((konum){
           setState(() {
-            this.konum = konum;                     
+            this.konum = konum; 
           });
           getLocation();
         });
@@ -76,7 +76,7 @@ class _MapsPageState extends State<Maps> {
        setState(() {
          lat = this.konum[0].lat;
          lng = this.konum[0].lng;
-         _discreteValue = this.konum[0].radius.roundToDouble();
+         _discreteValue = this.konum[0].radius;
        });
      }
 
@@ -235,7 +235,7 @@ void _onCameraMove(CameraPosition position) async{
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,    
       floatingActionButton: FloatingActionButton.extended(                
         onPressed: (){
-          databaseHelper.updateKonum(Konum.withId(konum[0].id, _lastMapPosition.latitude, _lastMapPosition.longitude,_discreteValue.round()));
+          databaseHelper.updateKonum(Konum.withId(konum[0].id, _lastMapPosition.latitude, _lastMapPosition.longitude,_discreteValue));
         },
         label: Text('Konum Güncelle'),
         icon: Icon(Icons.save),
