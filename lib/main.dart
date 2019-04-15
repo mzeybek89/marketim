@@ -32,7 +32,12 @@ DatabaseHelper databaseHelper = DatabaseHelper();
       lat = 0;
       lng = 0;
     }
-     await databaseHelper.addKonum(lat, lng,51);
+    databaseHelper.getCountKonum().then((sayi){
+      if(sayi==0)
+      {
+       databaseHelper.addKonum(lat, lng,51); // sadece 1 kere kayıt oluştur
+      }
+    });
 
   }
 

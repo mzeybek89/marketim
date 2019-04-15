@@ -33,24 +33,24 @@ class _MapsPageState extends State<Maps> {
   
 
   Future LocationInfo() async{
+    
     final Future<Database> dbFuture = databaseHelper.initializeDatabase();  
     dbFuture.then((database){     
       Future<List<Konum>> konumFuture = databaseHelper.getKonum();
       konumFuture.then((konum){
           setState(() {
             this.konum = konum; 
+            print("Konum idsi ==> " + konum[0].id.toString());
           });
-          getLocation();
-        });
+         getLocation();
+        });        
     });
     
-
   }
 
   Future getLocation() async{
-    if(this.konum.length==0)
-     {
-        loc.LocationData currentLocation;
+    if(konum==null){
+      loc.LocationData currentLocation;
         await location.changeSettings(
           accuracy: loc.LocationAccuracy.HIGH,
           interval: 1000,
@@ -71,14 +71,15 @@ class _MapsPageState extends State<Maps> {
           } 
           currentLocation = null;
         }
-     }
-     else{
-       setState(() {
+    }else{
+      setState(() {
          lat = this.konum[0].lat;
          lng = this.konum[0].lng;
          _discreteValue = this.konum[0].radius;
        });
-     }
+    }
+     
+
 
       setState(() {
           _myLoc = CameraPosition(
@@ -202,7 +203,7 @@ void _onCameraMove(CameraPosition position) async{
                             ),
                             child: Icon(Icons.location_searching,color:Colors.grey),
                         ),
-                        onTap: ()=> LocationInfo(),
+                        onTap: ()=> getLocation(),
                       ),
                     ),
                   ),
