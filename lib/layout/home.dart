@@ -60,10 +60,6 @@ class _MyHomePageState extends State<Home> {
             Navigator.push(context, route);
       }
 
-      
-      
-      
-      
     } catch (e) {
       print(e);
     }

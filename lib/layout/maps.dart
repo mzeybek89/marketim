@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:Marketim/models/liste.dart';
+import 'package:Marketim/models/konum.dart';
 import 'package:Marketim/utils/database_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 import "package:google_maps_webservice/geocoding.dart" as ws;
+import 'package:sqflite/sqflite.dart';
 
 class Maps extends StatefulWidget  {
   Maps({Key key}) : super(key: key);
@@ -18,7 +15,9 @@ class Maps extends StatefulWidget  {
   _MapsPageState createState() => _MapsPageState();
 }
 
-class _MapsPageState extends State<Maps> {
+class _MapsPageState extends State<Maps> {  
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Konum> konum;
   Completer<GoogleMapController> _controller = Completer();
   TextEditingController txtController = TextEditingController();
   loc.Location location = new loc.Location(); 
@@ -34,35 +33,61 @@ class _MapsPageState extends State<Maps> {
   
 
   Future LocationInfo() async{
-     
-    loc.LocationData currentLocation;
-    await location.changeSettings(
-      accuracy: loc.LocationAccuracy.HIGH,
-      interval: 1000,
-    );  
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      currentLocation = await location.getLocation();      
-       
-      
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();  
+    dbFuture.then((database){     
+      Future<List<Konum>> konumFuture = databaseHelper.getKonum();
+      konumFuture.then((konum){
+          setState(() {
+            this.konum = konum;                     
+          });
+          getLocation();
+        });
+    });
+    
+
+  }
+
+  Future getLocation() async{
+    if(this.konum.length==0)
+     {
+        loc.LocationData currentLocation;
+        await location.changeSettings(
+          accuracy: loc.LocationAccuracy.HIGH,
+          interval: 1000,
+        );  
+        // Platform messages may fail, so we use a try/catch PlatformException.
+        try {
+          currentLocation = await location.getLocation();      
+          
+          
+          setState(() {           
+            lat = currentLocation.latitude;
+            lng = currentLocation.longitude;
+          });
+        
+        } on PlatformException catch (e) {
+          if (e.code == 'PERMISSION_DENIED') {
+            //error = 'Permission denied';
+          } 
+          currentLocation = null;
+        }
+     }
+     else{
        setState(() {
-         _myLoc = CameraPosition(
-            target: LatLng(currentLocation.latitude, currentLocation.longitude),
+         lat = this.konum[0].lat;
+         lng = this.konum[0].lng;
+         _discreteValue = this.konum[0].radius.roundToDouble();
+       });
+     }
+
+      setState(() {
+          _myLoc = CameraPosition(
+            target: LatLng(lat, lng),
             zoom: 13,
           );
+      });
 
-         lat = currentLocation.latitude;
-         lng = currentLocation.longitude;
-       });
-
-       updateCam();
-    
-    } on PlatformException catch (e) {
-      if (e.code == 'PERMISSION_DENIED') {
-        //error = 'Permission denied';
-      } 
-      currentLocation = null;
-    }
+      updateCam();
   }
 
   Future updateCam() async{
@@ -70,19 +95,6 @@ class _MapsPageState extends State<Maps> {
     controller.animateCamera(CameraUpdate.newCameraPosition(_myLoc));
   }
 
-  Future locationInfoDubug() async{
-    var latitude = 38.467441;
-    var longitude = 27.218683;    
-    final CameraPosition _myLoc = CameraPosition(
-        target: LatLng(latitude, longitude),
-        zoom: 13,
-    );
-      
-    final GoogleMapController controller = await _controller.future;
-    
-    controller.animateCamera(CameraUpdate.newCameraPosition(_myLoc));
-    
-  } 
 
   Future getPlaces(String adres) async{    
     
@@ -223,7 +235,7 @@ void _onCameraMove(CameraPosition position) async{
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,    
       floatingActionButton: FloatingActionButton.extended(                
         onPressed: (){
-          //getPlaces();
+          databaseHelper.updateKonum(Konum.withId(konum[0].id, _lastMapPosition.latitude, _lastMapPosition.longitude,_discreteValue.round()));
         },
         label: Text('Konum Güncelle'),
         icon: Icon(Icons.save),
@@ -359,6 +371,5 @@ class Yerler {
     this.lat,
     this.lng
   });
-
-
 }
+
