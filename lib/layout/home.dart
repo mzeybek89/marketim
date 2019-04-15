@@ -253,7 +253,7 @@ class _MyHomePageState extends State<Home> {
                 decoration: BoxDecoration(color: Colors.blueAccent),  
                 otherAccountsPictures: <Widget>[
                   GestureDetector(
-                    child:Icon(Icons.map,color: Colors.white,),
+                    child:Icon(Icons.location_on,color: Colors.white,),
                     onTap: (){
                       Navigator.pushNamed(context, "/maps");
                     },

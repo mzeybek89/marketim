@@ -22,6 +22,7 @@ class _MapsPageState extends State<Maps> {
   Completer<GoogleMapController> _controller = Completer();
   TextEditingController txtController = TextEditingController();
   loc.Location location = new loc.Location(); 
+  double _discreteValue = 51;
   var searchRes = false;
   var yerler = List<Yerler>();
   double lat,lng;
@@ -120,7 +121,8 @@ class _MapsPageState extends State<Maps> {
       txtController.selection = TextSelection.fromPosition(
         new TextPosition(offset:0),
       );
-    });      
+    });   
+    FocusScope.of(context).requestFocus(new FocusNode());   
   }
 
 void _onCameraMove(CameraPosition position) async{    
@@ -136,63 +138,87 @@ void _onCameraMove(CameraPosition position) async{
         title: Text("Konum Güncelle"),      
       ),
       body:
-      Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height-250,
-        //padding: EdgeInsets.all(15),        
-        child:Stack(        
-          children:<Widget>[
-            GoogleMap(                        
-              tiltGesturesEnabled: true,
-              //cameraTargetBounds: CameraTargetBounds.unbounded,
-              myLocationEnabled: false,                 
-              mapType: MapType.normal,              
-              onCameraIdle: ()=>camStop(ws.Location(_lastMapPosition.latitude,_lastMapPosition.longitude)),
-              onCameraMove: _onCameraMove,
-              initialCameraPosition: _myLoc,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);          
-              },                      
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15),              
-              child: Align(                
-                alignment: Alignment.topCenter,
-                child: Container(
-                  height: 30,
-                    child: _txtField(),
-                ),
-              ),
-            ),           
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: Align(
-                alignment: Alignment.center,                
-                child: Icon(Icons.location_on,color: Colors.red, size: 40,),                
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 80, 20, 0),            
-              //padding: EdgeInsets.all(5),
-              child: Align(
-                alignment: Alignment.topRight,                
-                child: GestureDetector(
-                  child: Container(                
-                    width: 40,
-                    height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white,     
-                        borderRadius: new BorderRadius.circular(5.0),                    
-                      ),
-                      child: Icon(Icons.location_searching,color:Colors.grey),
+      Column(
+        children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height-250,
+              //padding: EdgeInsets.all(15),        
+              child:Stack(        
+                children:<Widget>[
+                  GoogleMap(                        
+                    tiltGesturesEnabled: true,
+                    //cameraTargetBounds: CameraTargetBounds.unbounded,
+                    myLocationEnabled: false,                 
+                    mapType: MapType.normal,              
+                    onCameraIdle: ()=>camStop(ws.Location(_lastMapPosition.latitude,_lastMapPosition.longitude)),
+                    onCameraMove: _onCameraMove,
+                    initialCameraPosition: _myLoc,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);          
+                    },                      
                   ),
-                  onTap: ()=> LocationInfo(),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(15),              
+                    child: Align(                
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        height: 30,
+                          child: _txtField(),
+                      ),
+                    ),
+                  ),           
+                  Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Align(
+                      alignment: Alignment.center,                
+                      child: Icon(Icons.location_on,color: Colors.red, size: 40,),                
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 80, 20, 0),            
+                    //padding: EdgeInsets.all(5),
+                    child: Align(
+                      alignment: Alignment.topRight,                
+                      child: GestureDetector(
+                        child: Container(                
+                          width: 40,
+                          height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white,     
+                              borderRadius: new BorderRadius.circular(5.0),                    
+                            ),
+                            child: Icon(Icons.location_searching,color:Colors.grey),
+                        ),
+                        onTap: ()=> LocationInfo(),
+                      ),
+                    ),
+                  ),
+                  searchList(context),
+                ],
               ),
             ),
-             searchList(context),
-          ],
-        ),
+            //Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 0),),
+            ListTile(
+              subtitle: Text("Mesafe "+'${_discreteValue.round()} km'),
+              contentPadding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+              leading: Icon(Icons.home),
+              trailing: Icon(Icons.local_shipping),
+              title: Slider(            
+                value: _discreteValue,
+                min: 1,
+                max: 100,                
+                divisions: 8,
+                label: '${_discreteValue.round()}',
+                onChanged: (double value) {
+                  setState(() {
+                    _discreteValue = value;
+                  });
+                },               
+              ),
+            ),
+            
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,    
       floatingActionButton: FloatingActionButton.extended(                
@@ -202,6 +228,7 @@ void _onCameraMove(CameraPosition position) async{
         label: Text('Konum Güncelle'),
         icon: Icon(Icons.save),
       ),
+          
     );
   }
 
@@ -228,7 +255,7 @@ void _onCameraMove(CameraPosition position) async{
           ),
             prefixIcon: Icon(Icons.search),  
             suffixIcon: GestureDetector(
-              child: Icon(Icons.cancel,color: Colors.grey,size: 20,),
+              child: Icon(Icons.cancel,color: Colors.grey,size: 25,),
               onTap: (){
                 setState(() {
                   searchRes=false;
@@ -254,7 +281,7 @@ void _onCameraMove(CameraPosition position) async{
           ),          
            prefixIcon: Icon(Icons.search),  
             suffixIcon: GestureDetector(
-              child: Icon(Icons.cancel,color: Colors.grey,size: 20,),
+              child: Icon(Icons.cancel,color: Colors.grey,size: 25,),
               onTap: (){
                 setState(() {
                   searchRes=false;
@@ -305,8 +332,8 @@ void _onCameraMove(CameraPosition position) async{
                         _lastMapPosition = _myLoc.target;
                         txtController.text=yerler[index].title;
                         searchRes=false;                       
-                      });     
-                      FocusScope.of(context).requestFocus(new FocusNode());
+                      });                   
+                      FocusScope.of(context).requestFocus(new FocusNode());          
                       updateCam();                                                         
                     },
                   );
