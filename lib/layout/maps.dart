@@ -271,7 +271,10 @@ void _onCameraMove(CameraPosition position) async{
               databaseHelper.addKonum(_lastMapPosition.latitude,_lastMapPosition.longitude, _discreteValue)
               .then((res){
                 //print("kayıt==>"+res.toString());
+                Navigator.of(context).pop();
               });
+            }else{
+              Navigator.of(context).pop();
             }
           });
 

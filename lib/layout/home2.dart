@@ -6,9 +6,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import './subpage.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/utils/database_helper.dart';
-import './marketler/marketler.dart';
 
 
 
@@ -24,8 +24,9 @@ class Home extends StatefulWidget  {
 class _MyHomePageState extends State<Home> {
   
   String _reader='';
- 
+  int _selectedBottomIndex = 1;
 
+  List data;
   TextEditingController txtListeEkle = new TextEditingController();
 
   Future loadUrunler(String query) async { //for barcode_scan
@@ -64,7 +65,17 @@ class _MyHomePageState extends State<Home> {
     }
   }
 
+  Future<String> getSWData() async { // anasayfa ürünler load
+    final String url = "http://zeybek.tk/api/liste.php?s=0";
+    var res =  await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
 
+    setState(() {
+      var resBody = json.decode(res.body);
+      data = resBody;
+    });
+
+    return "Success!";
+  }
 
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Liste> liste;
@@ -148,82 +159,81 @@ class _MyHomePageState extends State<Home> {
          
         ],
       ),
-      body:  GridView.count(
-            primary: false,
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(20),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            crossAxisCount: 2,
-            children: <Widget>[
-              GestureDetector(
-                    child:  Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(                       
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade200,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                            child:Container(
-                              width: 50,
-                              height: 50,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(              
-                                image: DecorationImage(
-                                  image: NetworkImage("https://cdn3.iconfinder.com/data/icons/text/100/list-512.png"), 
-                                  alignment: Alignment.topCenter,                  
-                                  fit: BoxFit.fitHeight,
-                                  colorFilter: ColorFilter.srgbToLinearGamma(),
-                                )                  
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.all(5),),
-                        Text("Listelerim",style: TextStyle(fontWeight: FontWeight.bold),),
-                      ],
-                  ),
-                onTap: (){
-                  //Route route = MaterialPageRoute(builder: (context) => Marketler());
-                  //Navigator.push(context, route);
-                  print("Listeler Syafasına Yönlenicek");
-                },
-              ),             
-             GestureDetector(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(                       
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade200,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                          child:Container(
-                            width: 55,
-                            height: 55,
-                            alignment: Alignment.center,
-                            child: Icon(Icons.business,size: 55,),
-                          ),
-                        ),
+      body: Center(
+        child:  GridView.builder(
+              primary: false,
+              padding: const EdgeInsets.all(10),          
+              itemCount: data == null ? 0 : data.length,                                                  
+              gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(
+                 crossAxisCount: _selectedBottomIndex+1,
+              ),
+              itemBuilder: (BuildContext context, int index) {
+              return  GestureDetector(
+                  onTap: (){
+                    Route route = MaterialPageRoute(builder: (context) => SubPage(
+                      id: int.parse(data[index]["id"]),
+                      stockCode: data[index]["stock_code"],
+                      productName: data[index]["product_name"],
+                      img: data[index]["img"],
+                      remoteImg: data[index]["remote_img"],
+                      remoteLink: data[index]["remote_link"], 
+                      ));
+                    Navigator.push(context, route);
+                  },
+                  child:  Container(
+                     margin: EdgeInsets.all(10), 
+                     color: Colors.white,
+                    child:Stack( 
+                    alignment: Alignment.center,                                                                              
+                    children: [
+                      FadeInImage.assetNetwork(                               
+                        placeholder: "assets/images/loading.gif",
+                        image: "http://zeybek.tk/api/images/"+data[index]["img"],                          
+                        //image: data[index]["remote_img"], 
                       ),
-                      Padding(padding: EdgeInsets.all(5),),
-                      Text("Marketler",style: TextStyle(fontWeight: FontWeight.bold),),
+                      Container(                                                      
+                        alignment: Alignment.bottomCenter,                                    
+                    child: Transform(                      
+                      transform: Matrix4.skewY(0.0)..rotateZ(0),                      
+                      child: Container( 
+                        width: double.infinity,
+                        padding: EdgeInsets.all(5),                        
+                        color: Color(0xcdffffff),
+                        child: Text(
+                          data[index]["product_name"],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            ),
+                            ),
+                      ),
+                    ),
+                   
+                  )
                     ],
-                ),
-                onTap: (){
-                  Route route = MaterialPageRoute(builder: (context) => Marketler());
-                  Navigator.push(context, route);
-                },
-             ),
-              
-            ],
+                    ),),
+                  );
+              } 
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(            
+        items:[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.view_list),
+            title: Text('Liste'),
+          ),
+           BottomNavigationBarItem( 
+            icon: Icon(Icons.view_module),
+            title: Text('Sıralı'),
+          ),
+           BottomNavigationBarItem(
+            icon: Icon(Icons.view_comfy),
+            title: Text('Grup'),
+          ),
+        ],        
+        currentIndex: _selectedBottomIndex,
+        onTap: _onItemTapped,
       ),
      drawer: Drawer(
        child:Column(           
@@ -374,10 +384,38 @@ class _MyHomePageState extends State<Home> {
 
   /* barode scan finish */
 
+ void _onItemTapped(int i){  //bottom menu
+   
+    setState(() {
+      _selectedBottomIndex = i;
+    });
+
+    switch (i) {
+      case 0:
+        print("Liste");              
+        break;
+      case 1:
+        print("Sıralı");
+        break;
+      case 2:
+        print("Grup");
+        
+        break;
+      default:
+    }        
+ }
+
+ _onSelectItem(int index) {
+     setState(() {
+        _selectedDrawerIndex = index;  
+      });
+      Navigator.of(context).pop(); // close the drawer
+  }
 
  @override
   void initState() {
     super.initState();
+    this.getSWData();
   }
   
 
