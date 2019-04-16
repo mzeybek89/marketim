@@ -20,6 +20,7 @@ class _MarketlerPageState extends State<Marketler> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Konum> konum;
   var marketler = List<Yerler>();
+  bool _progress = true;
   
 
   @override
@@ -64,6 +65,9 @@ class _MarketlerPageState extends State<Marketler> {
           marketler.add(new Yerler.fromJson(categoryJson[i]));  
         });        
       }
+      setState(() {
+        _progress=false;
+      });
     } catch (e) {
       print(e);
     }
@@ -85,7 +89,7 @@ class _MarketlerPageState extends State<Marketler> {
         title: new Text('Marketlerim'),
         backgroundColor: Colors.red,
       ),
-      body:  ListView.builder(
+      body:  _progress==false ? marketler.length>0 ? ListView.builder(
         shrinkWrap: true,
         itemCount: marketler.length,
         itemBuilder: (context, index) {
@@ -109,7 +113,7 @@ class _MarketlerPageState extends State<Marketler> {
             },
           );
         },
-      ),
+      ):Center(child: Text("Konumuzu yakın bir market bulunamadı"),) :Center(child:const CircularProgressIndicator(),),
     );
   }
 }

@@ -169,17 +169,18 @@ class _MyHomePageState extends State<Home> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                             child:Container(
-                              width: 50,
-                              height: 50,
+                              width: 55,
+                              height: 55,
                               alignment: Alignment.center,
-                              decoration: BoxDecoration(              
+                              /*decoration: BoxDecoration(              
                                 image: DecorationImage(
                                   image: NetworkImage("https://cdn3.iconfinder.com/data/icons/text/100/list-512.png"), 
                                   alignment: Alignment.topCenter,                  
                                   fit: BoxFit.fitHeight,
                                   colorFilter: ColorFilter.srgbToLinearGamma(),
                                 )                  
-                              ),
+                              ),*/
+                              child: Icon(Icons.list,size: 55,),
                             ),
                           ),
                         ),
