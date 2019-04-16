@@ -25,6 +25,7 @@ class _MapsPageState extends State<Maps> {
   var searchRes = false;
   var yerler = List<Yerler>();
   double lat,lng;
+  int id = 0;
   LatLng _lastMapPosition = LatLng(0, 0);
   CameraPosition _myLoc = CameraPosition(
     target: LatLng(38.467866199999996, 27.2184286),
@@ -73,6 +74,7 @@ class _MapsPageState extends State<Maps> {
          lat = this.konum[0].lat;
          lng = this.konum[0].lng;
          _discreteValue = this.konum[0].radius;
+         id =this.konum[0].id;
        });
     }
     
@@ -263,7 +265,16 @@ void _onCameraMove(CameraPosition position) async{
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,    
       floatingActionButton: FloatingActionButton.extended(                
         onPressed: (){
-          databaseHelper.updateKonum(Konum.withId(konum[0].id, _lastMapPosition.latitude, _lastMapPosition.longitude,_discreteValue));
+          databaseHelper.updateKonum(Konum.withId(id, _lastMapPosition.latitude, _lastMapPosition.longitude,_discreteValue))
+          .then((res){
+            if(res==0){
+              databaseHelper.addKonum(_lastMapPosition.latitude,_lastMapPosition.longitude, _discreteValue)
+              .then((res){
+                //print("kayıt==>"+res.toString());
+              });
+            }
+          });
+
         },
         label: Text('Konum Güncelle'),
         icon: Icon(Icons.save),

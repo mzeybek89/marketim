@@ -124,7 +124,7 @@ class DatabaseHelper{
     return konum;
   }
 
-  Future<int> addKonum(double lat,double lng,int radius) async{
+  Future<int> addKonum(double lat,double lng,double radius) async{
     Database db = await this.database;
     //var result = await db.insert('$listeTable', liste.toMap());
     var result = await db.rawInsert("insert into $konumTable ($colLat,$colLng,$colRadius) values('$lat','$lng','$radius')");
