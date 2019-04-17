@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-
-
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:Marketim/models/konum.dart';
+import 'package:Marketim/utils/database_helper.dart';
 
 class SubPage extends StatefulWidget  {
 
@@ -21,26 +24,62 @@ class SubPage extends StatefulWidget  {
 }
 
 class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMixin {
-  //var f = new NumberFormat("####.00# ₺", "tr_TR");
-  
+  //var f = new NumberFormat("####.00# ₺", "tr_TR");  
   var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
+  TextEditingController yorumtxt = TextEditingController();
+  String txt;
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Konum> konum;
+  var marketlerim = List<Marketlerim>();
+  var details = List<Details>();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-    
-  @override
-  void dispose() {
 
-    super.dispose();
-  }
+    @override
+    void initState() {
+      super.initState();
+      LocationInfo();
+    }
+
+    @override
+    void dispose() {
+      super.dispose();
+    }
+
+    Future LocationInfo() async{
+      Future<List<Konum>> konumFuture = databaseHelper.getKonum();
+      konumFuture.then((konum){
+          setState(() {
+            this.konum = konum;
+          });
+          loadMarketler();
+        });         
+    }
+
+   Future loadMarketler() async {
+      try {
+        var lat = konum[0].lat;
+        var lng = konum[0].lng;
+        var radius = konum[0].radius;
+        var code = widget.stockCode;
+        final String url = "http://zeybek.tk/api/detay.php?code=$code&lat=$lat&lng=$lng&radius=$radius";
+        var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
+        List parsedJson = json.decode(res.body);
+        var categoryJson = parsedJson;
+        marketlerim.clear();        
+        for (int i = 0; i < categoryJson.length; i++) {
+          setState(() {          
+            marketlerim.add(new Marketlerim.fromJson(categoryJson[i]));  
+          });        
+        }        
+        
+      } catch (e) {
+        print(e);
+      }
+    }
+ 
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController yorumtxt = TextEditingController();
-    String txt;
-  
 /* Tabbarsız ilk düz sayfa versiyonu */
    return new Scaffold(
       appBar: AppBar(
@@ -179,7 +218,13 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
               ),
               Container(
                 padding: EdgeInsets.all(10), 
-                child: Column(                                               
+                child: new ListView.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    return new StuffInTiles(marketlerim[index]);
+                  },
+                  itemCount: marketlerim.length,
+                ),
+                /*child: Column(                                               
                   children: <Widget>[                
                     ListTile(                     
                       leading: Image.asset("assets/images/a101.png",width: 50,),                
@@ -197,7 +242,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
                       subtitle: Text("Migros"),                                              
                     ),                    
                   ],              
-                ),
+                ),*/
               ),
               /*Marketler Fiyat Listesi Bitir */  
 
@@ -400,6 +445,88 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
         ),
         ],
       ),
+    );
+  }
+}
+
+class Details{
+  String brand;
+  String name;
+  double price;
+
+  Details({
+    this.brand,
+    this.name,
+    this.price
+  });
+
+  factory Details.fromJson(Map<String, dynamic> json){
+    return Details(
+      brand: json['brand'] as String,
+      name: json['name'] as String,
+      price: double.parse(json['price'])
+    );
+  }
+
+}
+
+class Marketlerim {
+  String brand;
+  String stockCode;
+  String productName;
+  double price;
+  Details details;
+
+  Marketlerim({
+    this.brand,
+    this.stockCode,
+    this.productName,
+    this.price,
+    this.details
+  });
+
+  factory Marketlerim.fromJson(Map<String,dynamic> parsedJson) {
+    return Marketlerim(
+        brand: parsedJson['brand'] as String,
+        stockCode: parsedJson['stock_code'] as String,
+        productName: parsedJson['product_name'] as String,
+        price: double.parse(parsedJson['price']),
+        details: Details.fromJson(parsedJson['details'])      
+    );  
+  }
+}
+
+class StuffInTiles extends StatelessWidget {
+  final Marketlerim marketlerim;
+  StuffInTiles(this.marketlerim);
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildTiles(marketlerim);
+  }
+
+  Widget _buildTiles(Marketlerim t) {
+  
+      /*return new ListTile(
+          //dense: true,
+          enabled: true,
+          isThreeLine: false,
+          onLongPress: () => print("long press"),
+          onTap: () => print("tap"),
+          subtitle: new Text("Subtitle"),
+          leading: new Text("Leading"),
+          selected: true,
+          trailing: new Text("trailing"),
+          title: new Text(t.brand));*/
+
+    return new ExpansionTile(
+      key: new PageStorageKey<int>(1),
+      title: new Text(t.details.name),
+      children: <Widget>[
+        ListTile(
+          title: Text(t.brand),
+        )         
+      ],
     );
   }
 }

@@ -152,6 +152,13 @@ class _MyHomePageState extends State<Home> {
               Navigator.pushNamed(context, "/search"),
             }, 
           ),
+           IconButton(
+            icon: Icon(Icons.text_fields),
+            tooltip: 'Tst',
+            onPressed:() => {
+              Navigator.pushNamed(context, "/list"),
+            }, 
+          ),
           
           
          

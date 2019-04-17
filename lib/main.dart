@@ -6,6 +6,7 @@ import 'layout/search.dart';
 import 'layout/maps.dart';
 import 'package:Marketim/utils/database_helper.dart';
 import 'package:location/location.dart' as loc;
+import 'package:Marketim/layout/test/list.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -74,6 +75,7 @@ Future main() async {
       "/":(context) => Home(),
       "/search":(context) => Search(),
       "/maps":(context)=>Maps(),
+      "/list":(context) => TileApp(),
  
     },
   ));
