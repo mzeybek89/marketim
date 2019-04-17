@@ -1,98 +1,82 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io';
 import './subpage.dart';
-import 'package:path_provider/path_provider.dart';
-//import 'package:async_resource/file_resource.dart';
-
-
-
-
+import 'package:Marketim/models/konum.dart';
+import 'package:Marketim/utils/database_helper.dart';
 class Search extends StatefulWidget {
   Search({Key key}) : super(key: key);
+  
+
   @override
   _SearchPageState createState() => new _SearchPageState();
 }
 
 class _SearchPageState extends State<Search> {
   TextEditingController editingController = TextEditingController();
-  bool _progress = true;
-  var duplicateItems = List<Urunler>();
- 
-  File jsonFile;
-  Directory dir;
-  String fileName = "urunler.json";
-  bool fileExists = false;
-  //Map<String, String> fileContent;
-  List fileContent;
-
-    Future loadUrunler() async {
-    try {
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Konum> konum;
+  var items = List<String>();
+  var urunler = List<Urunler>();
   
-      Directory directory = await getApplicationDocumentsDirectory();
-      dir = directory;
-      jsonFile = new File(dir.path + "/" + fileName);
-      fileExists = jsonFile.existsSync();
-      if (fileExists) {
-        fileContent = json.decode( jsonFile.readAsStringSync());
-      }
-      var categoryJson = fileContent;
-      for (int i = 0; i < categoryJson.length; i++) { 
-        duplicateItems.add(new Urunler.fromJson(categoryJson[i]));
-      }
-      
-     
+  @override
+  void initState() {
+    LocationInfo();
+    super.initState();
 
-      /*final String url = "http://zeybek.tk/api/liste.php?s=0&all=true";
+  }
+
+  Future LocationInfo() async{
+    Future<List<Konum>> konumFuture = databaseHelper.getKonum();
+    konumFuture.then((konum){
+        setState(() {
+          this.konum = konum;
+        });
+      });         
+  }
+
+  Future loadUrunler(String query) async {
+    try {
+      var lat = konum[0].lat;
+      var lng = konum[0].lng;
+      var radius = konum[0].radius;
+      final String url = "http://zeybek.tk/api/liste.php?q=$query&lat=$lat&lng=$lng&radius=$radius";
       //String jsonString = await rootBundle.loadString('assets/players.json');
       var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
       List parsedJson = json.decode(res.body);
       var categoryJson = parsedJson;
+      urunler.clear();
+      //print(url);
       for (int i = 0; i < categoryJson.length; i++) {
-        duplicateItems.add(new Urunler.fromJson(categoryJson[i]));
-      }*/
+        setState(() {          
+          urunler.add(new Urunler.fromJson(categoryJson[i]));  
+        });        
+      }
+
     } catch (e) {
       print(e);
     }
-      items.addAll(duplicateItems);
-      setState(() {
-        _progress=false;
-      });
-
   }
 
 
-  var items = List<Urunler>();
 
-  @override
-  void initState() {
-    loadUrunler();
-    super.initState();
-  }
+  Future filterSearchResults()async {  
 
-  void filterSearchResults(String query) {
-    List<Urunler> dummySearchList = List<Urunler>();
-    dummySearchList.addAll(duplicateItems);
-    if(query.isNotEmpty) {
-      List<Urunler> dummyListData = List<Urunler>();
-
-      dummySearchList.forEach((item) {
-        if(item.productName.toLowerCase().contains(query.toLowerCase())) {
-          dummyListData.add(item);
-        }
+    String query = editingController.text;
+    //print(query);
+    if(query!="" && query.length>2) {     
+      setState(() {  
+        loadUrunler(query);
       });
-      setState(() {
-        items.clear();
-        items.addAll(dummyListData);
-      });
-      return;
     } else {
       setState(() {
-        items.clear();
-        items.addAll(duplicateItems);
+        items.clear();        
+        urunler.clear();
       });
     }
+
+
 
   }
 
@@ -109,9 +93,10 @@ class _SearchPageState extends State<Search> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 onChanged: (value) {
-                  filterSearchResults(value);
+                  filterSearchResults();
                 },
                 autofocus: true,
+                autocorrect: false,
                 controller: editingController,
                 decoration: InputDecoration(
                     labelText: "Search",
@@ -121,23 +106,22 @@ class _SearchPageState extends State<Search> {
                     borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
             ),
-            _progress == true?const CircularProgressIndicator():
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: items.length,
+                itemCount: urunler.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(items[index].productName),
-                    subtitle: Text(items[index].stockCode),
+                    title: Text(urunler[index].productName),
+                    subtitle: Text(urunler[index].stockCode),
                     onTap: (){
-                       Route route = MaterialPageRoute(builder: (context) => SubPage(
-                          id: items[index].id,
-                          stockCode: items[index].stockCode,
-                          productName: items[index].productName,
-                          img: items[index].img,
-                          remoteImg: items[index].remoteImg,
-                          remoteLink: items[index].remoteLink, 
+                      Route route = MaterialPageRoute(builder: (context) => SubPage(
+                          id: urunler[index].id,
+                          stockCode: urunler[index].stockCode,
+                          productName: urunler[index].productName,
+                          img: urunler[index].img,
+                          remoteImg: urunler[index].remoteImg,
+                          remoteLink: urunler[index].remoteLink, 
                           ));
                           Navigator.push(context, route);
                     },
@@ -150,8 +134,11 @@ class _SearchPageState extends State<Search> {
       ),
     );
   }
+   @override
+  void dispose() {
+    super.dispose();
+  }
 }
-
 
 
 class Urunler {
@@ -180,6 +167,8 @@ class Urunler {
         img: parsedJson['img'] as String,
         remoteImg: parsedJson['remote_img'] as String,
         remoteLink: parsedJson['remote_link'] as String
-    );
+    );  
   }
 }
+
+

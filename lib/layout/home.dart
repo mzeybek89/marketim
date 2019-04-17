@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import './subpage.dart';
 import 'package:Marketim/models/liste.dart';
+import 'package:Marketim/models/konum.dart';
 import 'package:Marketim/utils/database_helper.dart';
 import './marketler/marketler.dart';
 
@@ -24,13 +25,28 @@ class Home extends StatefulWidget  {
 class _MyHomePageState extends State<Home> {
   
   String _reader='';
- 
-
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Liste> liste;
+  List<Konum> konum;
+  int count = 0; 
+  int _selectedDrawerIndex = 0;
   TextEditingController txtListeEkle = new TextEditingController();
+
+  Future LocationInfo() async{
+    Future<List<Konum>> konumFuture = databaseHelper.getKonum();
+    konumFuture.then((konum){
+        setState(() {
+          this.konum = konum;
+        });
+      });         
+  }
 
   Future loadUrunler(String query) async { //for barcode_scan
     try {
-      final String url = "http://zeybek.tk/api/detay.php?code="+query;
+      var lat = konum[0].lat;
+      var lng = konum[0].lng;
+      var radius = konum[0].radius;
+      final String url = "http://zeybek.tk/api/barkod.php?code=$query&lat=$lat&lng=$lng&radius=$radius";
       //String jsonString = await rootBundle.loadString('assets/players.json');
       var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
       Map<String, dynamic> gelen = json.decode(res.body);
@@ -63,13 +79,6 @@ class _MyHomePageState extends State<Home> {
       print(e);
     }
   }
-
-
-
-  DatabaseHelper databaseHelper = DatabaseHelper();
-  List<Liste> liste;
-  int count = 0; 
-  int _selectedDrawerIndex = 0;
 
   void _saveListe(BuildContext context,String title) async{
     var res = await databaseHelper.addListe(title);
@@ -140,7 +149,7 @@ class _MyHomePageState extends State<Home> {
             icon: Icon(Icons.search),
             tooltip: 'Search',
             onPressed:() => {
-              Navigator.pushNamed(context, "/search2"),
+              Navigator.pushNamed(context, "/search"),
             }, 
           ),
           

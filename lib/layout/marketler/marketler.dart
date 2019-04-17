@@ -54,7 +54,7 @@ class _MarketlerPageState extends State<Marketler> {
 
   Future loadMarketler(double lat,double lng,double distance) async {
     try {
-      final String url = "https://zeybek.tk/find_json.php?lat=$lat&lng=$lng&radius=$distance";
+      final String url = "https://zeybek.tk/api/marketler.php?lat=$lat&lng=$lng&radius=$distance";
       print(url);      
       var res = await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
       List parsedJson = json.decode(res.body);
@@ -107,7 +107,7 @@ class _MarketlerPageState extends State<Marketler> {
               onTap: (){                
                 _launchURL(marketler[index].lat,marketler[index].lng);
               },
-            ),                
+            ),
             onTap: (){
               print("isme tıklandı");
             },

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'layout/home.dart';
-import 'layout/search2.dart';
 import 'layout/search.dart';
 import 'layout/maps.dart';
 import 'package:Marketim/utils/database_helper.dart';
@@ -73,7 +72,6 @@ Future main() async {
     initialRoute: "/",
     routes: {
       "/":(context) => Home(),
-      "/search2":(context) => Search2(),
       "/search":(context) => Search(),
       "/maps":(context)=>Maps(),
  
