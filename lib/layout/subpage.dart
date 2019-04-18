@@ -218,31 +218,59 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
               ),
               Container(
                 padding: EdgeInsets.all(10), 
-                child: new ListView.builder(
-                  itemBuilder: (BuildContext context, int index) {
-                    return new StuffInTiles(marketlerim[index]);
-                  },
+                child: new ListView.builder(    
+                  physics: const NeverScrollableScrollPhysics(),              
+                  shrinkWrap: true,
                   itemCount: marketlerim.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      child: ListTile(                     
+                        leading: Image.network("http://zeybek.tk/api/brand_image/"+marketlerim[index].brand.toLowerCase()+".png",width: 50,),                
+                        title: Text(f.format(marketlerim[index].price)),
+                        subtitle: Text(marketlerim[index].brand),                                              
+                      ),                      
+                      onTap: () {
+                        showDialog(
+                          context: context,                          
+                          builder: (BuildContext context) {
+                           return new AlertDialog(
+                             contentPadding: EdgeInsets.all(0.0),
+                              title: Center(child: Image.network("http://zeybek.tk/api/brand_image/"+marketlerim[index].brand.toLowerCase()+".png",width: 50,),),
+                              content: new Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  ListView.builder(                                      
+                                  shrinkWrap: true,
+                                  itemCount: marketlerim[index].details.length,
+                                  itemBuilder: (BuildContext context, int index2) {
+                                      return ListTile(
+                                          //leading: Icon(Icons.business),
+                                          title: Text(marketlerim[index].details[index2].name),
+                                          trailing: Text(f.format(marketlerim[index].details[index2].price)),
+                                          subtitle: Text(marketlerim[index].details[index2].address),
+                                      );
+                                  }
+                                  ),
+                                ],
+                              ),
+                              actions: <Widget>[
+                                new FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  textColor: Theme.of(context).primaryColor,
+                                  child: const Text('Kapat'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                     
+                    );
+                  },                  
                 ),
-                /*child: Column(                                               
-                  children: <Widget>[                
-                    ListTile(                     
-                      leading: Image.asset("assets/images/a101.png",width: 50,),                
-                      title: Text(f.format(14.25)),
-                      subtitle: Text("A101"),                                              
-                    ),
-                    ListTile(                      
-                      leading: Image.asset("assets/images/carrefour.png",width: 50,),                
-                      title: Text(f.format(15.30)),
-                      subtitle: Text("Carrefour"),                                              
-                    ),
-                    ListTile(                      
-                      leading: Image.asset("assets/images/migros.png",width: 50,),                
-                      title: Text(f.format(12.45)),
-                      subtitle: Text("Migros"),                                              
-                    ),                    
-                  ],              
-                ),*/
               ),
               /*Marketler Fiyat Listesi Bitir */  
 
@@ -453,18 +481,27 @@ class Details{
   String brand;
   String name;
   double price;
+  String address;
+  double lat;
+  double lng;
 
   Details({
     this.brand,
     this.name,
-    this.price
+    this.price,
+    this.address,
+    this.lat,
+    this.lng
   });
 
-  factory Details.fromJson(Map<String, dynamic> json){
+  factory Details.fromJson(Map<String,dynamic> parsedJson){
     return Details(
-      brand: json['brand'] as String,
-      name: json['name'] as String,
-      price: double.parse(json['price'])
+      brand: parsedJson['brand'] as String,
+      name: parsedJson['name'] as String,
+      price: double.parse(parsedJson['price']),
+      address: parsedJson['address'] as String,
+      lat: double.parse(parsedJson['lat']),
+      lng: double.parse(parsedJson['lng'])
     );
   }
 
@@ -475,7 +512,7 @@ class Marketlerim {
   String stockCode;
   String productName;
   double price;
-  Details details;
+  final List<Details> details;
 
   Marketlerim({
     this.brand,
@@ -486,12 +523,18 @@ class Marketlerim {
   });
 
   factory Marketlerim.fromJson(Map<String,dynamic> parsedJson) {
+
+    var list = parsedJson['details'] as List;
+    //print(list.runtimeType);
+    List<Details> detailList = list.map((i) => Details.fromJson(i)).toList();
+
     return Marketlerim(
         brand: parsedJson['brand'] as String,
         stockCode: parsedJson['stock_code'] as String,
         productName: parsedJson['product_name'] as String,
-        price: double.parse(parsedJson['price']),
-        details: Details.fromJson(parsedJson['details'])      
+        price: double.parse(parsedJson['price']),   
+        details: detailList
+
     );  
   }
 }
@@ -507,7 +550,8 @@ class StuffInTiles extends StatelessWidget {
 
   Widget _buildTiles(Marketlerim t) {
   
-      /*return new ListTile(
+      if (t.details.isEmpty)
+      return new ListTile(
           //dense: true,
           enabled: true,
           isThreeLine: false,
@@ -517,16 +561,12 @@ class StuffInTiles extends StatelessWidget {
           leading: new Text("Leading"),
           selected: true,
           trailing: new Text("trailing"),
-          title: new Text(t.brand));*/
+          title: new Text(t.brand));
 
     return new ExpansionTile(
       key: new PageStorageKey<int>(1),
-      title: new Text(t.details.name),
-      children: <Widget>[
-        ListTile(
-          title: Text(t.brand),
-        )         
-      ],
+      title: new Text(t.brand),
+      //children: t.details.map().toList(),
     );
   }
 }

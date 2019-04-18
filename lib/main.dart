@@ -6,7 +6,7 @@ import 'layout/search.dart';
 import 'layout/maps.dart';
 import 'package:Marketim/utils/database_helper.dart';
 import 'package:location/location.dart' as loc;
-import 'package:Marketim/layout/test/list.dart';
+import 'package:Marketim/layout/test/longpress.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -29,6 +29,12 @@ DatabaseHelper databaseHelper = DatabaseHelper();
       } 
       lat = 0;
       lng = 0;
+      databaseHelper.getCountKonum().then((sayi){
+        if(sayi==0)
+        {
+        databaseHelper.addKonum(lat, lng,51); // sadece 1 kere kayıt oluştur
+        }
+      });
     }
     databaseHelper.getCountKonum().then((sayi){
       if(sayi==0)
@@ -75,7 +81,7 @@ Future main() async {
       "/":(context) => Home(),
       "/search":(context) => Search(),
       "/maps":(context)=>Maps(),
-      "/list":(context) => TileApp(),
+      "/test":(context) => Page(),
  
     },
   ));

@@ -156,7 +156,7 @@ class _MyHomePageState extends State<Home> {
             icon: Icon(Icons.text_fields),
             tooltip: 'Tst',
             onPressed:() => {
-              Navigator.pushNamed(context, "/list"),
+              Navigator.pushNamed(context, "/test"),
             }, 
           ),
           
