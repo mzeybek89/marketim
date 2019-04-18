@@ -296,7 +296,7 @@ void _onCameraMove(CameraPosition position) async{
   Widget _txtField(){
     return searchRes ? 
       TextField(                  
-        decoration: new InputDecoration(
+        decoration: new InputDecoration(                
           hintText: "Adres Ara",
           fillColor: Colors.white,
           filled: true,                        
@@ -308,20 +308,23 @@ void _onCameraMove(CameraPosition position) async{
             ), 
           ),
             prefixIcon: Icon(Icons.search),  
-            suffixIcon: GestureDetector(
-              child: Icon(Icons.cancel,color: Colors.grey,size: 25,),
-              onTap: (){
-                setState(() {
+            suffixIcon: IconButton(icon: Icon(Icons.cancel,color: Colors.grey,size: 25,),
+            onPressed: (){
+               setState(() {
                   searchRes=false;
                   txtController.text="";
-                });
-              },
-            )      
+              });
+            },
+          ),                
         ),
         style: TextStyle(fontSize: 12,),
         onChanged: (String txt) {
             getPlaces(txt);
         },
+        autocorrect: false,
+        autofocus: false,
+        enableInteractiveSelection: false,
+        textInputAction: TextInputAction.done,
         controller: txtController,                
       )
       :
