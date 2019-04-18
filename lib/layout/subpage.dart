@@ -228,7 +228,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
                         leading: Image.network("http://zeybek.tk/api/brand_image/"+marketlerim[index].brand.toLowerCase()+".png",width: 50,),                
                         title: Text(f.format(marketlerim[index].price)),
                         subtitle: Text(marketlerim[index].brand),                                              
-                      ),                      
+                      ),
                       onTap: () {
                         showDialog(
                           context: context,                          
@@ -536,37 +536,5 @@ class Marketlerim {
         details: detailList
 
     );  
-  }
-}
-
-class StuffInTiles extends StatelessWidget {
-  final Marketlerim marketlerim;
-  StuffInTiles(this.marketlerim);
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildTiles(marketlerim);
-  }
-
-  Widget _buildTiles(Marketlerim t) {
-  
-      if (t.details.isEmpty)
-      return new ListTile(
-          //dense: true,
-          enabled: true,
-          isThreeLine: false,
-          onLongPress: () => print("long press"),
-          onTap: () => print("tap"),
-          subtitle: new Text("Subtitle"),
-          leading: new Text("Leading"),
-          selected: true,
-          trailing: new Text("trailing"),
-          title: new Text(t.brand));
-
-    return new ExpansionTile(
-      key: new PageStorageKey<int>(1),
-      title: new Text(t.brand),
-      //children: t.details.map().toList(),
-    );
   }
 }

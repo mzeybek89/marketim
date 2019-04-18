@@ -185,7 +185,7 @@ void _onCameraMove(CameraPosition position) async{
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height-250,
-              padding: EdgeInsets.all(10),        
+              padding: EdgeInsets.all(15),        
               child:Stack(        
                 children:<Widget>[
                   GoogleMap(                        

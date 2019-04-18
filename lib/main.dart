@@ -27,14 +27,8 @@ DatabaseHelper databaseHelper = DatabaseHelper();
       if (e.code == 'PERMISSION_DENIED') {
         //error = 'Permission denied';
       } 
-      lat = 0;
-      lng = 0;
-      databaseHelper.getCountKonum().then((sayi){
-        if(sayi==0)
-        {
-        databaseHelper.addKonum(lat, lng,51); // sadece 1 kere kayıt oluştur
-        }
-      });
+      lat = 38.467866199999996;
+      lng =  27.2184286;
     }
     databaseHelper.getCountKonum().then((sayi){
       if(sayi==0)
