@@ -11,31 +11,46 @@ import 'package:Marketim/layout/test/longpress.dart';
 DatabaseHelper databaseHelper = DatabaseHelper();
 
   Future LocationInfo() async{
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
-    loc.Location location = new loc.Location(); 
-    loc.LocationData currentLocation;
     double lat,lng;
-    await location.changeSettings(
-      accuracy: loc.LocationAccuracy.HIGH,
-      interval: 1000,
-    );  
-    try {
-      currentLocation = await location.getLocation();      
-      lat = currentLocation.latitude;
-      lng = currentLocation.longitude;
-    } on PlatformException catch (e) {
-      if (e.code == 'PERMISSION_DENIED') {
-        //error = 'Permission denied';
-      } 
-      lat = 38.467866199999996;
-      lng =  27.2184286;
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+    loc.Location location = new loc.Location();
+    await location.requestPermission(); 
+    bool izin = await location.hasPermission();
+    if(izin==false){
+        lat = 38.467866199999996;
+        lng =  27.2184286;
+
+        databaseHelper.getCountKonum().then((sayi){
+          if(sayi==0)
+          {
+            databaseHelper.addKonum(lat, lng,51); // sadece 1 kere kayıt oluştur
+          }
+        });
     }
-    databaseHelper.getCountKonum().then((sayi){
-      if(sayi==0)
-      {
-       databaseHelper.addKonum(lat, lng,51); // sadece 1 kere kayıt oluştur
-      }
-    });
+    else{
+        loc.LocationData currentLocation;    
+        await location.changeSettings(
+          accuracy: loc.LocationAccuracy.HIGH,
+          interval: 1000,
+        );  
+        try {
+          currentLocation = await location.getLocation();      
+          lat = currentLocation.latitude;
+          lng = currentLocation.longitude;
+        } on PlatformException catch (e) {
+          if (e.code == 'PERMISSION_DENIED') {
+            //error = 'Permission denied';
+          } 
+        
+        }
+        databaseHelper.getCountKonum().then((sayi){
+          if(sayi==0)
+          {
+          databaseHelper.addKonum(lat, lng,51); // sadece 1 kere kayıt oluştur
+          }
+        });
+    }
+    
 
   }
 
