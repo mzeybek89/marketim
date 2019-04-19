@@ -49,7 +49,7 @@ class DatabaseHelper{
     print(directory.path);
     String path = directory.path + '/marketim.db';
 
-    var marketimDatabase = openDatabase(path,version: 2, onCreate: _createDb,onUpgrade: _upgradeDb);
+    var marketimDatabase = openDatabase(path,version: 1, onCreate: _createDb,onUpgrade: _upgradeDb);
     return marketimDatabase;
   }
 
