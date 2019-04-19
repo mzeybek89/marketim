@@ -50,7 +50,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
     @override
     void initState() {
       super.initState();
-      LocationInfo();
+      locationInfo();
     }
 
     @override
@@ -58,14 +58,24 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
       super.dispose();
     }
 
-    Future LocationInfo() async{
+    Future locationInfo() async{
       Future<List<Konum>> konumFuture = databaseHelper.getKonum();
       konumFuture.then((konum){
           setState(() {
             this.konum = konum;
           });
           loadMarketler();
+          listemdemiKontrol();
         });         
+    }
+
+    Future listemdemiKontrol() async{
+      var countFuture = await databaseHelper.getCountUrunlerWithWhere(widget.stockCode);
+      if(countFuture==1){
+        setState(() {
+          alisverisListeEkleBtn=true;
+        });
+      }
     }
 
    Future loadMarketler() async {
@@ -113,7 +123,8 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
       ));    
   }
 
-  alisverisListemdenCikar(BuildContext context){
+  Future alisverisListemdenCikar(BuildContext context)async{
+    await databaseHelper.deleteUrun(widget.stockCode);
     setState(() {
       alisverisListeEkleBtn=false;
     });
@@ -686,56 +697,6 @@ selectMarker(BuildContext context, int listeId,String stockCode){
   print(stockCode);
   return showDialog(
       context: context,
-      /*new AlertDialog(
-        title: Text("Market Seç"),
-        content: new Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            ListView.builder(                                      
-            shrinkWrap: true,
-            itemCount: widget.parent.marketlerim.length,
-            itemBuilder: (BuildContext context, int index) {
-                return RadioListTile(
-                    //leading: Icon(Icons.business),
-                    title: Text(widget.parent.marketlerim[index].brand),
-                    subtitle: Text(widget.parent.f.format(widget.parent.marketlerim[index].price)),
-                    groupValue: _markerSelectedIndex,
-                    value: widget.parent.marketlerim[index].id,
-                    onChanged:(int val){ setState(() {
-                      _markerSelectedIndex=val;
-                    }); },
-                );
-            }
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Text("Vazgeç"),
-            onPressed: () {              
-              Navigator.of(context).pop();
-            },
-          ),
-          new FlatButton(
-            child: new Text("Kaydet"),
-            onPressed: () {
-              print("db kayıt burada yapılacak");
-                var res = _urunKaydet();
-                if(res!=null){
-                  widget.parent.setState((){
-                    widget.parent.alisverisListeEkleBtn=true;
-                  });
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                  widget.parent._showToastMsg(context,"Ürün Listenize Eklendi",Colors.green);                  
-                }
-                
-            },
-          ),
-        ]
-
-      ),*/
       child:new MarketSec(
         parent: widget,
         stockCode: widget.stockCode,
@@ -838,8 +799,6 @@ class MarketSec extends StatefulWidget {
   final int seciliListe;
   final String stockCode;
   
-
-
   @override
   State createState() => new MarketSecState();
 }

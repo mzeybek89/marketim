@@ -46,10 +46,10 @@ class DatabaseHelper{
 
   Future<Database> initializeDatabase()async{
     Directory directory = await getApplicationDocumentsDirectory();
-    //print(directory.path);
+    print(directory.path);
     String path = directory.path + '/marketim.db';
 
-    var marketimDatabase = openDatabase(path,version: 1, onCreate: _createDb);
+    var marketimDatabase = openDatabase(path,version: 2, onCreate: _createDb,onUpgrade: _upgradeDb);
     return marketimDatabase;
   }
 
@@ -60,11 +60,12 @@ class DatabaseHelper{
   }
 
 
-  /*void _upgradeDb(Database db, int oldVersion, int newVersion) async {
+  void _upgradeDb(Database db, int oldVersion, int newVersion) async {
     await db.execute("DROP TABLE IF EXISTS $listeTable");
     await db.execute("DROP TABLE IF EXISTS $konumTable");
+    await db.execute("DROP TABLE IF EXISTS $urunlerTable");
       _createDb(db, newVersion);
-  }*/
+  }
 /*Liste Tablosu */
   Future<List<Map<String, dynamic>>>getListeMapList() async{
     Database db = await this.database;
@@ -193,9 +194,9 @@ class DatabaseHelper{
     return result;
   }
 
-  Future<int> deleteUrun(int id) async{
+  Future<int> deleteUrun(String stockCode) async{
     Database db = await this.database;
-    var result = await db.rawDelete("delete from $urunlerTable where $colId=$id");
+    var result = await db.rawDelete("delete from $urunlerTable where $colStockCode='$stockCode'");
     return result;
   }
 
@@ -206,5 +207,11 @@ class DatabaseHelper{
     return result;
   }
 
+  Future<int> getCountUrunlerWithWhere(String stockCode) async{
+    Database db = await this.database;
+    List<Map<String,dynamic>> x = await db.rawQuery("SELECT COUNT(*) from $urunlerTable where $colStockCode='$stockCode'");
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
 
 }
