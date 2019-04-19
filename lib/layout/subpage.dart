@@ -611,7 +611,8 @@ class MyDialogState extends State<MyDialog> {
   int _seciliListe=-1;
   List<Liste> liste=[];
   TextEditingController txtListeEkle = TextEditingController();
-  int _markerSelectedIndex=-1;
+
+
 
   updataListe(){
      Future<List<Liste>> listeFuture = databaseHelper.getListe();
@@ -685,7 +686,7 @@ selectMarker(BuildContext context, int listeId,String stockCode){
   print(stockCode);
   return showDialog(
       context: context,
-      child: new AlertDialog(
+      /*new AlertDialog(
         title: Text("Market Seç"),
         content: new Column(
           mainAxisSize: MainAxisSize.min,
@@ -734,18 +735,16 @@ selectMarker(BuildContext context, int listeId,String stockCode){
           ),
         ]
 
-      ),
+      ),*/
+      child:new MarketSec(
+        parent: widget,
+        stockCode: widget.stockCode,
+        seciliListe: _seciliListe,
+        ),
   );
 }
 
-Future _urunKaydet() async{
-  int _listeId = _seciliListe;
-  int _markerId = _markerSelectedIndex;
-  String  _stockCode = widget.stockCode;
 
-  var res = await databaseHelper.addUrun(_listeId, _markerId, _stockCode);
-  return res;
-}
 
   @override
   void initState() {
@@ -828,4 +827,87 @@ Future _urunKaydet() async{
           ],
         );  
   }
+}
+
+
+
+class MarketSec extends StatefulWidget {
+  const MarketSec({this.parent,this.seciliListe,this.stockCode});
+
+  final MyDialog parent;
+  final int seciliListe;
+  final String stockCode;
+  
+
+
+  @override
+  State createState() => new MarketSecState();
+}
+
+class MarketSecState extends State<MarketSec> {
+int markerSelectedIndex=-1;
+
+Future _urunKaydet() async{
+  int _listeId = widget.seciliListe;
+  int _markerId = markerSelectedIndex;
+  String  _stockCode = widget.stockCode;
+
+  var res = await widget.parent.parent.databaseHelper.addUrun(_listeId, _markerId, _stockCode);
+  return res;
+}
+
+  @override
+  Widget build(BuildContext context) {
+    return new AlertDialog(
+        title: Text("Market Seç"),
+        content: new Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            ListView.builder(                                      
+            shrinkWrap: true,
+            itemCount: widget.parent.parent.marketlerim.length,
+            itemBuilder: (BuildContext context, int index) {
+                return RadioListTile(
+                    //leading: Icon(Icons.business),
+                    title: Text(widget.parent.parent.marketlerim[index].brand),
+                    subtitle: Text(widget.parent.parent.f.format(widget.parent.parent.marketlerim[index].price)),
+                    groupValue: markerSelectedIndex,
+                    value: widget.parent.parent.marketlerim[index].id,
+                    onChanged:(int val){ setState(() {
+                      markerSelectedIndex=val;
+                    }); },
+                );
+            }
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text("Vazgeç"),
+            onPressed: () {              
+              Navigator.of(context).pop();
+            },
+          ),
+          new FlatButton(
+            child: new Text("Kaydet"),
+            onPressed: () {
+              print("db kayıt burada yapılacak");
+                var res = _urunKaydet();
+                if(res!=null){
+                  widget.parent.parent.setState((){
+                    widget.parent.parent.alisverisListeEkleBtn=true;
+                  });
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  widget.parent.parent._showToastMsg(context,"Ürün Listenize Eklendi",Colors.green);                  
+                }
+                
+            },
+          ),
+        ]
+
+      );
+  }
+  
 }
