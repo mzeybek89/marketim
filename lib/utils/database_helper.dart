@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/models/konum.dart';
+import 'package:Marketim/models/urunler.dart';
 
 class DatabaseHelper{
   static DatabaseHelper _databaseHelper;
@@ -20,6 +21,12 @@ class DatabaseHelper{
   String colLat = "lat";
   String colLng = "lng";
   String colRadius = "radius";
+  //Listedeki Ürünler
+  String urunlerTable = "urunler";
+  String colListeId = "listeId";
+  String colMarkerId = "markerId";
+  String colStockCode = "stockCode";
+
 
   factory DatabaseHelper(){
     if(_databaseHelper==null)
@@ -39,6 +46,7 @@ class DatabaseHelper{
 
   Future<Database> initializeDatabase()async{
     Directory directory = await getApplicationDocumentsDirectory();
+    //print(directory.path);
     String path = directory.path + '/marketim.db';
 
     var marketimDatabase = openDatabase(path,version: 1, onCreate: _createDb);
@@ -48,6 +56,7 @@ class DatabaseHelper{
   void _createDb(Database db, int newVersion) async {
     await db.execute('CREATE TABLE $listeTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colTitle TEXT)');
     await db.execute('CREATE TABLE $konumTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colLat REAL,$colLng REAL,$colRadius REAL)');
+    await db.execute('CREATE TABLE $urunlerTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colListeId REAL,$colMarkerId REAL,$colStockCode TEXT)');
   }
 
 
@@ -146,6 +155,53 @@ class DatabaseHelper{
   Future<int> getCountKonum() async{
     Database db = await this.database;
     List<Map<String,dynamic>> x = await db.rawQuery('SELECT COUNT(*) from $konumTable');
+    int result = Sqflite.firstIntValue(x);
+    return result;
+  }
+
+  /*Ürünler Tablosu */
+
+  Future<List<Map<String, dynamic>>>getUrunlerMapList() async{
+    Database db = await this.database;
+    //var result = await db.rawQuery('SELECT * FROM $konumTable');
+    var result = await db.query(urunlerTable);
+    return result;
+  }
+
+  Future<List<Urunler>> getUrunler() async{
+    var urunlerMapList = await getUrunlerMapList();
+    int count = urunlerMapList.length;
+
+    List<Urunler> urunler = List<Urunler>();
+
+    for (int i=0; i<count; i++){
+      urunler.add(Urunler.fromMapObject(urunlerMapList[i]));
+    }
+    return urunler;
+  }
+
+  Future<int> addUrun(int listeId,int markerId,String stockCode) async{
+    Database db = await this.database;
+    //var result = await db.insert('$listeTable', liste.toMap());
+    var result = await db.rawInsert("insert into $urunlerTable ($colListeId,$colMarkerId,$colStockCode) values('$listeId','$markerId','$stockCode')");
+    return result;
+  }
+
+  Future<int> updateUrun(Urunler urun) async{
+    Database db = await this.database;
+    var result = await db.update('$urunlerTable', urun.toMap(),where:'$colId = ?',whereArgs:[urun.id]);
+    return result;
+  }
+
+  Future<int> deleteUrun(int id) async{
+    Database db = await this.database;
+    var result = await db.rawDelete("delete from $urunlerTable where $colId=$id");
+    return result;
+  }
+
+  Future<int> getCountUrunler() async{
+    Database db = await this.database;
+    List<Map<String,dynamic>> x = await db.rawQuery('SELECT COUNT(*) from $urunlerTable');
     int result = Sqflite.firstIntValue(x);
     return result;
   }

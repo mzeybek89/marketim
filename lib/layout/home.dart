@@ -127,12 +127,11 @@ class _MyHomePageState extends State<Home> {
   }
   
   @override
-  Widget build(BuildContext context) {
-
+  Widget build(BuildContext context) {    
     if(liste==null){
-      liste = List<Liste>();
-      updateListe();
+      liste = List<Liste>();      
     }
+    updateListe();
     
     return new Scaffold(
       appBar: AppBar(
@@ -152,16 +151,6 @@ class _MyHomePageState extends State<Home> {
               Navigator.pushNamed(context, "/search"),
             }, 
           ),
-           IconButton(
-            icon: Icon(Icons.text_fields),
-            tooltip: 'Tst',
-            onPressed:() => {
-              Navigator.pushNamed(context, "/test"),
-            }, 
-          ),
-          
-          
-         
         ],
       ),
       body:  GridView.count(
@@ -282,7 +271,7 @@ class _MyHomePageState extends State<Home> {
                           builder: (BuildContext context2) {
                             // return object of type Dialog
                             return AlertDialog(
-                              title: new Text("Liste Ekle"),
+                              title: new Text("Liste Oluştur"),
                               content: new Container(
                                 child: 
                                   TextField(
@@ -395,6 +384,7 @@ class _MyHomePageState extends State<Home> {
  @override
   void initState() {
     super.initState();
+    //updateListe();
   }
   
 

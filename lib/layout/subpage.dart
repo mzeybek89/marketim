@@ -4,8 +4,11 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:Marketim/models/konum.dart';
+import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/utils/database_helper.dart';
+
 
 class SubPage extends StatefulWidget  {
 
@@ -27,12 +30,23 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
   //var f = new NumberFormat("####.00# ₺", "tr_TR");  
   var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
   TextEditingController yorumtxt = TextEditingController();
+  TextEditingController txtListeEkle = TextEditingController();
   String txt;
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Konum> konum;
+  int _seciliListe=-1;
+  bool alisverisListeEkleBtn = false;
+
+  
+  
+  void _onValueChange(int value) {
+    setState(() {
+      _seciliListe = value;
+    });
+  }
+
   var marketlerim = List<Marketlerim>();
   var details = List<Details>();
-
 
     @override
     void initState() {
@@ -76,7 +90,37 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
         print(e);
       }
     }
- 
+
+    void _showToastMsg(BuildContext context,String message,Color color){
+      Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIos: 1,
+          backgroundColor: color,
+          textColor: Colors.white,
+          fontSize: 16,               
+      );
+    }
+
+  alisverisListemeEkle(BuildContext context){
+    return showDialog(
+      context: context,
+      child: new MyDialog(
+        parent: this,
+        onValueChange: _onValueChange,
+        initialValue: _seciliListe,
+        stockCode: widget.stockCode,
+      ));    
+  }
+
+  alisverisListemdenCikar(BuildContext context){
+    setState(() {
+      alisverisListeEkleBtn=false;
+    });
+    _showToastMsg(context, "Ürün Listeden Çıkarıldı",Colors.orange);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -186,10 +230,17 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
             /*Tüketici memnun mu bitir */
             
             /* Butonlar Başla*/
+              
+              alisverisListeEkleBtn ==false ?
               RaisedButton(
-                onPressed: () {},
+                onPressed: () { alisverisListemeEkle(context);},
                 child: const Text('Alışveriş Listeme Ekle'),
+              ):
+              RaisedButton(
+                onPressed: () { alisverisListemdenCikar(context);},
+                child: const Text('Alışveriş Listemden Çıkar'),
               ),
+
               RaisedButton(
                 onPressed: () {},
                 child: const Text('Sık Alınanlara Ekle'),
@@ -536,5 +587,209 @@ class Marketlerim {
         details: detailList
 
     );  
+  }
+}
+
+class MyDialog extends StatefulWidget {
+  const MyDialog({this.parent,this.onValueChange, this.initialValue,this.stockCode});
+
+  final _MyHomePageState parent;
+  final int initialValue;
+  final void Function(int) onValueChange;
+  final String stockCode;
+  
+
+
+  @override
+  State createState() => new MyDialogState();
+}
+
+class MyDialogState extends State<MyDialog> {
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  int _seciliListe=-1;
+  List<Liste> liste=[];
+  TextEditingController txtListeEkle = TextEditingController();
+
+  updataListe(){
+     Future<List<Liste>> listeFuture = databaseHelper.getListe();
+      listeFuture.then((gelenliste){
+        setState(() {
+          this.liste = gelenliste;
+        });
+      }); 
+  }
+
+  void _saveListe(BuildContext context,String title) async{
+    var res = await databaseHelper.addListe(title);
+    if(res!=0){
+      widget.parent._showToastMsg(context, "Liste Eklendi",Colors.green);
+    }
+    else{
+      widget.parent._showToastMsg(context, "Liste Eklemede Hata",Colors.red);
+    }
+  }
+
+
+ 
+  listeEkleWidget(BuildContext context){
+   txtListeEkle.text="";                  
+  return  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Liste Oluştur"),
+          content: new Container(
+            child: 
+              TextField(
+                autofocus: false,
+                autocorrect: false,
+                controller: txtListeEkle,
+              ),
+            
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Vazgeç"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Kaydet"),
+              onPressed: () {
+                if(txtListeEkle.text==""){
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  widget.parent._showToastMsg(context,"Lüften Yazı Alanını Boş Bırakmayın",Colors.red);
+                }
+                else{
+                  /* Burada Liste Db Ye Kaydedilecek */                                    
+                  //_saveListe(context,txtListeEkle.text);                                      
+                  Navigator.of(context).pop();                 
+                  _saveListe(context, txtListeEkle.text);  
+                  updataListe();                
+                }
+              },
+            ),
+          ],
+        );
+      },
+  ); 
+}
+
+selectMarker(BuildContext context, int listeId,String stockCode){
+  print(listeId);
+  print(stockCode);
+  return showDialog(
+      context: context,
+      child: new AlertDialog(
+        title: Text("Market Seç"),
+        content: Container(child:Text("Marketler Burada Gözükecek"),),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text("Vazgeç"),
+            onPressed: () {              
+              Navigator.of(context).pop();
+            },
+          ),
+          new FlatButton(
+            child: new Text("Kaydet"),
+            onPressed: () {
+              print("db kayıt burada yapılacak");
+              widget.parent.setState((){
+                widget.parent.alisverisListeEkleBtn=true;
+              });
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+              widget.parent._showToastMsg(context,"Ürün Listenize Eklendi",Colors.green);
+
+            },
+          ),
+        ]
+
+      ),
+  );
+}
+
+  @override
+  void initState() {
+    super.initState();
+    updataListe();
+    _seciliListe = widget.initialValue;
+  }
+
+  Widget build(BuildContext context) {
+   return new AlertDialog(
+          title: new Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+            Expanded(child:Text("Liste Seç"),),
+            IconButton(icon: Icon(Icons.add),onPressed: (){
+                listeEkleWidget(context);
+            },),
+          ],),          
+          content: liste.length==0 ? 
+          new ListView(
+            shrinkWrap: true,
+            children:<Widget>[
+              Container(
+                child: Text("Üzgünüz Hiç Listeniz Yok Hemen Birtane Oluşturun"),
+              )
+            ]
+          ): 
+          new Row(   
+            children:<Widget>[
+              Flexible(child:ListView.builder(
+                  itemCount: liste.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context,int i){
+                    return RadioListTile(
+                      title: Text(liste[i].title),
+                      value: liste[i].id,
+                      groupValue: _seciliListe,
+                      onChanged: (int value) { 
+                        setState(() {
+                          _seciliListe = value;
+                        });
+                        widget.onValueChange(value); 
+                      },
+                    );
+                  },
+                ),
+              ),
+            ], 
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Vazgeç"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            liste.length==0 ?
+            new FlatButton(
+              child: new Text("Oluştur"),
+              onPressed: () {
+                listeEkleWidget(context);
+              },
+            )
+            :
+            new FlatButton(
+              child: new Text("Seç"),
+              onPressed: () {
+                
+                if(_seciliListe==-1){
+                  widget.parent._showToastMsg(context,"Lüften Seçim Yapın",Colors.red);
+                }
+                else
+                {
+                  selectMarker(context,_seciliListe,widget.stockCode);              
+                }
+                
+              },
+            ),
+          ],
+        );  
   }
 }
