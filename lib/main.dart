@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sqflite/sqflite.dart';
+//import 'package:sqflite/sqflite.dart';
 import 'layout/home.dart';
 import 'layout/search.dart';
 import 'layout/maps.dart';
@@ -10,9 +10,9 @@ import 'package:location/location.dart' as loc;
 
 DatabaseHelper databaseHelper = DatabaseHelper();
 
-  Future LocationInfo() async{
+  Future locationInfo() async{
     double lat,lng;
-    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+    databaseHelper.initializeDatabase();
     loc.Location location = new loc.Location();
     await location.requestPermission(); 
     bool izin = await location.hasPermission();
@@ -57,7 +57,7 @@ DatabaseHelper databaseHelper = DatabaseHelper();
 
 Future main() async {
 
-  LocationInfo();
+  locationInfo();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

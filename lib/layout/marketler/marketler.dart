@@ -26,7 +26,7 @@ class _MarketlerPageState extends State<Marketler> {
   @override
   void initState() {
     super.initState();
-    LocationInfo();
+    locationInfo();
   }
 
   kmTomt(double distance){
@@ -42,7 +42,7 @@ class _MarketlerPageState extends State<Marketler> {
     return ret;
   }
 
-   Future LocationInfo() async{
+   Future locationInfo() async{
     Future<List<Konum>> konumFuture = databaseHelper.getKonum();
     konumFuture.then((konum){
         setState(() {

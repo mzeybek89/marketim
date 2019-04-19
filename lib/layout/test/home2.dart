@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:Marketim/layout/subpage.dart';
-import 'package:sqflite/sqflite.dart';
+//import 'package:sqflite/sqflite.dart';
 import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/utils/database_helper.dart';
 
@@ -23,7 +23,7 @@ class Home extends StatefulWidget  {
 
 class _MyHomePageState extends State<Home> {
   
-  String _reader='';
+  String reader='';
   int _selectedBottomIndex = 1;
 
   List data;
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<Home> {
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Liste> liste;
   int count = 0; 
-  int _selectedDrawerIndex = 0;
+  int selectedDrawerIndex = 0;
 
   void _saveListe(BuildContext context,String title) async{
     var res = await databaseHelper.addListe(title);
@@ -94,16 +94,17 @@ class _MyHomePageState extends State<Home> {
   }
 
   void _deletelistItem(BuildContext context, int id) async{
-    int result = await databaseHelper.deleteListe(id);
+    await databaseHelper.deleteListe(id);
     _showToastMsg(context, "Liste Silindi",Colors.orange);
     updateListe();
   }
 
-  void _showSnackBar(BuildContext context,String message){
+/* 
+ void _showSnackBar(BuildContext context,String message){
     final snackbar = SnackBar(content: Text(message));
     Scaffold.of(context).showSnackBar(snackbar);
   }
-
+*/
   void _showToastMsg(BuildContext context,String message,Color color){
     Fluttertoast.showToast(
         msg: message,
@@ -368,16 +369,16 @@ class _MyHomePageState extends State<Home> {
           
           loadUrunler(reader);        
           
-      setState(() => this._reader=reader);
+      setState(() => this.reader=reader);
     } on PlatformException catch(e) {
      if(e.code==BarcodeScanner.CameraAccessDenied) {
        //requestPermission();
        }
-     else{setState(()=> _reader = "unknown exception $e");}
+     else{setState(()=> reader = "unknown exception $e");}
   }on FormatException{
-      setState(() => _reader = 'null (User returned using the "back"-button before scanning anything. Result)');
+      setState(() => reader = 'null (User returned using the "back"-button before scanning anything. Result)');
     } catch (e) {
-      setState(() => _reader = 'Unknown error: $e');
+      setState(() => reader = 'Unknown error: $e');
     }
  
   }
@@ -405,12 +406,12 @@ class _MyHomePageState extends State<Home> {
     }        
  }
 
- _onSelectItem(int index) {
+/* _onSelectItem(int index) {
      setState(() {
-        _selectedDrawerIndex = index;  
+        selectedDrawerIndex = index;  
       });
       Navigator.of(context).pop(); // close the drawer
-  }
+ }*/
 
  @override
   void initState() {

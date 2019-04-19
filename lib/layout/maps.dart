@@ -6,7 +6,7 @@ import 'package:Marketim/utils/database_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 import "package:google_maps_webservice/geocoding.dart" as ws;
-import 'package:sqflite/sqflite.dart';
+//import 'package:sqflite/sqflite.dart';
 
 class Maps extends StatefulWidget  {
   Maps({Key key}) : super(key: key);
@@ -33,7 +33,7 @@ class _MapsPageState extends State<Maps> {
   );
   
 
-  Future LocationInfo() async{
+  Future locationInfo() async{
     
   
       Future<List<Konum>> konumFuture = databaseHelper.getKonum();
@@ -288,9 +288,8 @@ void _onCameraMove(CameraPosition position) async{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    LocationInfo();
+    locationInfo();
   }
 
   Widget _txtField(){

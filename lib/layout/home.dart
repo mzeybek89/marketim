@@ -24,15 +24,15 @@ class Home extends StatefulWidget  {
 
 class _MyHomePageState extends State<Home> {
   
-  String _reader='';
+  String reader='';
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Liste> liste;
   List<Konum> konum;
   int count = 0; 
-  int _selectedDrawerIndex = 0;
+  int selectedDrawerIndex = 0;
   TextEditingController txtListeEkle = new TextEditingController();
 
-  Future LocationInfo() async{
+  Future locationInfo() async{
     Future<List<Konum>> konumFuture = databaseHelper.getKonum();
     konumFuture.then((konum){
         setState(() {
@@ -92,15 +92,15 @@ class _MyHomePageState extends State<Home> {
   }
 
   void _deletelistItem(BuildContext context, int id) async{
-    int result = await databaseHelper.deleteListe(id);
+    await databaseHelper.deleteListe(id);
     _showToastMsg(context, "Liste Silindi",Colors.orange);
     updateListe();
   }
 
-  void _showSnackBar(BuildContext context,String message){
+  /*void _showSnackBar(BuildContext context,String message){
     final snackbar = SnackBar(content: Text(message));
     Scaffold.of(context).showSnackBar(snackbar);
-  }
+  }*/
 
   void _showToastMsg(BuildContext context,String message,Color color){
     Fluttertoast.showToast(
@@ -364,16 +364,16 @@ class _MyHomePageState extends State<Home> {
           
           loadUrunler(reader);        
           
-      setState(() => this._reader=reader);
+      setState(() => this.reader=reader);
     } on PlatformException catch(e) {
      if(e.code==BarcodeScanner.CameraAccessDenied) {
        //requestPermission();
        }
-     else{setState(()=> _reader = "unknown exception $e");}
+     else{setState(()=> reader = "unknown exception $e");}
   }on FormatException{
-      setState(() => _reader = 'null (User returned using the "back"-button before scanning anything. Result)');
+      setState(() => reader = 'null (User returned using the "back"-button before scanning anything. Result)');
     } catch (e) {
-      setState(() => _reader = 'Unknown error: $e');
+      setState(() => reader = 'Unknown error: $e');
     }
  
   }

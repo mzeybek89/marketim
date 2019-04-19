@@ -115,7 +115,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
   alisverisListemeEkle(BuildContext context){
     return showDialog(
       context: context,
-      child: new MyDialog(
+      builder: (_) => new MyDialog(
         parent: this,
         onValueChange: _onValueChange,
         initialValue: _seciliListe,
@@ -697,7 +697,7 @@ selectMarker(BuildContext context, int listeId,String stockCode){
   print(stockCode);
   return showDialog(
       context: context,
-      child:new MarketSec(
+      builder: (_) => new MarketSec(
         parent: widget,
         stockCode: widget.stockCode,
         seciliListe: _seciliListe,

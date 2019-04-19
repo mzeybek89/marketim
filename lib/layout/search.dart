@@ -22,12 +22,12 @@ class _SearchPageState extends State<Search> {
   
   @override
   void initState() {
-    LocationInfo();
+    locationInfo();
     super.initState();
 
   }
 
-  Future LocationInfo() async{
+  Future locationInfo() async{
     Future<List<Konum>> konumFuture = databaseHelper.getKonum();
     konumFuture.then((konum){
         setState(() {
