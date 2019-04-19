@@ -56,7 +56,7 @@ class DatabaseHelper{
   void _createDb(Database db, int newVersion) async {
     await db.execute('CREATE TABLE $listeTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colTitle TEXT)');
     await db.execute('CREATE TABLE $konumTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colLat REAL,$colLng REAL,$colRadius REAL)');
-    await db.execute('CREATE TABLE $urunlerTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colListeId REAL,$colMarkerId REAL,$colStockCode TEXT)');
+    await db.execute('CREATE TABLE $urunlerTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colListeId INTEGER,$colMarkerId INTEGER,$colStockCode TEXT)');
   }
 
 
