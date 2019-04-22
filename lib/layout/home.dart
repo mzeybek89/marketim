@@ -26,8 +26,8 @@ class _MyHomePageState extends State<Home> {
   
   String reader='';
   DatabaseHelper databaseHelper = DatabaseHelper();
-  List<Liste> liste;
-  List<Konum> konum;
+  List<Liste> liste=[];
+  List<Konum> konum=[];
   int count = 0; 
   int selectedDrawerIndex = 0;
   TextEditingController txtListeEkle = new TextEditingController();
@@ -196,7 +196,7 @@ class _MyHomePageState extends State<Home> {
                 onTap: (){
                   //Route route = MaterialPageRoute(builder: (context) => Marketler());
                   //Navigator.push(context, route);
-                  print("Listeler Syafasına Yönlenicek");
+                  Navigator.pushNamed(context, "/listelerim");
                 },
               ),             
              GestureDetector(
@@ -322,11 +322,36 @@ class _MyHomePageState extends State<Home> {
                     children: <Widget>[
                         ListTile(  
                         leading: Icon(Icons.list),                      
-                        title: Text(liste[index].title),                        
+                        title: Text(liste[index].title),
+                        subtitle: Text(liste[index].count.toString()+" ürün var"),                        
                         trailing: GestureDetector(
                           child: Icon(Icons.delete, color: Colors.grey,),
                           onTap: () {
-                            _deletelistItem(context,liste[index].id);
+                            showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Liste Silme Onay"),
+                                      content: Text(liste[index].title +" Başlıklı Liste Silenecek Onaylıyor musunuz ?"),
+                                      actions: <Widget>[
+                                        new FlatButton(
+                                          child: new Text("Vazgeç"),
+                                          onPressed: () {              
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        new FlatButton(
+                                        child: new Text("Sil"),
+                                        onPressed: () {   
+                                          _deletelistItem(context,liste[index].id); //listeyi sil
+                                          databaseHelper.deleteUrunListeId(liste[index].id); // listeye bağlı olan ürünleri sil
+                                          Navigator.of(context).pop();
+                                        }                                                                            
+                                      ),
+                                      ],
+                                    );
+                                  },
+                              );
                           },
                         ),
 

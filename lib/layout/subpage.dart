@@ -47,16 +47,16 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
 
   var marketlerim = List<Marketlerim>();
   var details = List<Details>();
-    @override
-    void initState() {
-      super.initState();
-      locationInfo();
-    }
+  @override
+  void initState() {
+    super.initState();
+    locationInfo();
+  }
 
-    @override
-    void dispose() {
-      super.dispose();
-    }
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
     Future locationInfo() async{
       Future<List<Konum>> konumFuture = databaseHelper.getKonum();
@@ -124,7 +124,7 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
   }
 
   Future alisverisListemdenCikar(BuildContext context)async{
-    await databaseHelper.deleteUrun(widget.stockCode);
+    await databaseHelper.deleteUrunStockCode(widget.stockCode);
     setState(() {
       alisverisListeEkleBtn=false;
     });
@@ -823,6 +823,7 @@ Future _urunKaydet() async{
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Flexible( child:
             ListView.builder(                                      
             shrinkWrap: true,
             itemCount: widget.parent.parent.marketlerim.length,
@@ -838,6 +839,7 @@ Future _urunKaydet() async{
                     }); },
                 );
             }
+            ),
             ),
           ],
         ),

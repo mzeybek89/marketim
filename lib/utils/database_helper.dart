@@ -69,8 +69,8 @@ class DatabaseHelper{
 /*Liste Tablosu */
   Future<List<Map<String, dynamic>>>getListeMapList() async{
     Database db = await this.database;
-    //var result = await db.rawQuery('SELECT * FROM $listeTable');
-    var result = await db.query(listeTable);
+    var result = await db.rawQuery('SELECT *,(SELECT count(*) from $urunlerTable where $colListeId=$listeTable.$colId) as count from $listeTable');
+    //var result = await db.query(listeTable);
     return result;
   }
 
@@ -111,7 +111,8 @@ class DatabaseHelper{
     int result = Sqflite.firstIntValue(x);
     return result;
   }
-  
+
+
 
 /*Konum Tablosu */
 
@@ -162,15 +163,15 @@ class DatabaseHelper{
 
   /*Ürünler Tablosu */
 
-  Future<List<Map<String, dynamic>>>getUrunlerMapList() async{
+  Future<List<Map<String, dynamic>>>getUrunlerMapList(int listeId) async{
     Database db = await this.database;
-    //var result = await db.rawQuery('SELECT * FROM $konumTable');
-    var result = await db.query(urunlerTable);
+    var result = await db.rawQuery('SELECT * FROM $urunlerTable where $colListeId=$listeId');
+    //var result = await db.query(urunlerTable);
     return result;
   }
 
-  Future<List<Urunler>> getUrunler() async{
-    var urunlerMapList = await getUrunlerMapList();
+  Future<List<Urunler>> getUrunler(int listeId) async{
+    var urunlerMapList = await getUrunlerMapList(listeId);
     int count = urunlerMapList.length;
 
     List<Urunler> urunler = List<Urunler>();
@@ -194,9 +195,15 @@ class DatabaseHelper{
     return result;
   }
 
-  Future<int> deleteUrun(String stockCode) async{
+  Future<int> deleteUrunStockCode(String stockCode) async{
     Database db = await this.database;
     var result = await db.rawDelete("delete from $urunlerTable where $colStockCode='$stockCode'");
+    return result;
+  }
+
+  Future<int> deleteUrunListeId(int listeId) async{
+    Database db = await this.database;
+    var result = await db.rawDelete("delete from $urunlerTable where $colListeId='$listeId'");
     return result;
   }
 
