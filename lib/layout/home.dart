@@ -10,6 +10,8 @@ import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/models/konum.dart';
 import 'package:Marketim/utils/database_helper.dart';
 import './marketler/marketler.dart';
+import 'package:Marketim/layout/test/firestore.dart';
+import 'package:Marketim/layout/auth/google_auth.dart';
 
 
 
@@ -24,6 +26,7 @@ class Home extends StatefulWidget  {
 
 class _MyHomePageState extends State<Home> {
   
+  var _profile;
   String reader='';
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Liste> liste=[];
@@ -228,7 +231,36 @@ class _MyHomePageState extends State<Home> {
                   Navigator.push(context, route);
                 },
              ),
-              
+
+             GestureDetector(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Expanded(
+                        child: Container(                       
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade200,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                          child:Container(
+                            width: 55,
+                            height: 55,
+                            alignment: Alignment.center,
+                            child: Icon(Icons.info,size: 55,),
+                          ),
+                        ),
+                      ),
+                      Padding(padding: EdgeInsets.all(5),),
+                      Text("Test",style: TextStyle(fontWeight: FontWeight.bold),),
+                    ],
+                ),
+                onTap: (){
+                  Route route = MaterialPageRoute(builder: (context) => Test());
+                  Navigator.push(context, route);                 
+                },
+             ),                
             ],
       ),
      drawer: Drawer(
@@ -236,21 +268,66 @@ class _MyHomePageState extends State<Home> {
            mainAxisAlignment: MainAxisAlignment.start,
            crossAxisAlignment: CrossAxisAlignment.start,
            children: <Widget>[
-            UserAccountsDrawerHeader(
-                accountName: Text('Mehmet Zeybek'),                
-                accountEmail: Text('mehmetzeybek@icloud.com'),
-                currentAccountPicture:
-                Image.asset("assets/images/profile.jpg"),
-                decoration: BoxDecoration(color: Colors.blueAccent),  
-                otherAccountsPictures: <Widget>[
-                  GestureDetector(
-                    child:Icon(Icons.location_on,color: Colors.white,),
-                    onTap: (){
-                      Navigator.pushNamed(context, "/maps");
-                    },
-                  ),
-                ],            
+             StreamBuilder(
+               stream: authService.user,
+               builder: (context,snapshot){
+                 if(_profile.toString()!="{}"){
+                  return  UserAccountsDrawerHeader(            
+                        accountName: Text(_profile['displayName'].toString()),                
+                        accountEmail: Text(_profile['email'].toString()),
+                        currentAccountPicture:
+                        Image.network(_profile['photoURL'.toString()]),
+                        decoration: BoxDecoration(color: Colors.blueAccent),  
+                        otherAccountsPictures: <Widget>[
+                          GestureDetector(
+                            child:Icon(Icons.location_on,color: Colors.white,),
+                            onTap: (){
+                              Navigator.pushNamed(context, "/maps");
+                            },
+                          ),
+                          GestureDetector(
+                            child:Icon(Icons.exit_to_app,color: Colors.white,),
+                            onTap: (){
+                                authService.signOut();
+                            },
+                          ),
+                        ],            
+                    );
+                 }
+                 else
+                 {
+                    return Container(
+                        width: double.infinity,
+                        child: DrawerHeader(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[                              
+                            GestureDetector(
+                              child:Image.asset("assets/images/login_google.png",width: 200,),
+                              onTap: (){
+                                authService.googleSignIn();
+                              },
+                            ),
+                            Expanded(child: Text(""),),
+                              GestureDetector(
+                              child:Icon(Icons.location_on,color: Colors.white,),
+                              onTap: (){
+                                Navigator.pushNamed(context, "/maps");
+                              },
+                            ),
+
+                            ],
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent,                  
+                          ),                        
+                        ),
+                      );
+                 }
+               },
              ),
+            
              Expanded(
                child: ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -409,6 +486,7 @@ class _MyHomePageState extends State<Home> {
  @override
   void initState() {
     super.initState();
+    authService.profile.listen((state) => setState(() => _profile = state));
     //updateListe();
   }
   

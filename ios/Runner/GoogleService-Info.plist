@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>527959566877-rv5d6rqkk3ia6ibosg7ut2gol0gg9k0p.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.527959566877-rv5d6rqkk3ia6ibosg7ut2gol0gg9k0p</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAQNQsNJWojIhHq5NF_HALvPLNzdp7Xes8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>527959566877</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.zeybek.marketim</string>
+	<key>PROJECT_ID</key>
+	<string>marketim-firebase</string>
+	<key>STORAGE_BUCKET</key>
+	<string>marketim-firebase.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:527959566877:ios:51f524ee06468761</string>
+	<key>DATABASE_URL</key>
+	<string>https://marketim-firebase.firebaseio.com</string>
+</dict>
+</plist>

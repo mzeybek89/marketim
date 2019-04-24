@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "527959566877",
+    "firebase_url": "https://marketim-firebase.firebaseio.com",
+    "project_id": "marketim-firebase",
+    "storage_bucket": "marketim-firebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527959566877:android:51f524ee06468761",
+        "android_client_info": {
+          "package_name": "com.zeybek.marketim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "527959566877-1rte6s9me8890ae188ehnimd5m71qp4c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqYWVFfvXQTTUGQeLqaBnEMjAL700s8Jk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "527959566877-1rte6s9me8890ae188ehnimd5m71qp4c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "527959566877-rv5d6rqkk3ia6ibosg7ut2gol0gg9k0p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zeybek.marketim"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
