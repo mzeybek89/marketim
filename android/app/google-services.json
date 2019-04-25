@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "527959566877-c85ef05gcvpf97qa78hdf4ktnemi8spg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeybek.marketim",
+            "certificate_hash": "717d9cac6fca674d4c52a548e63a4002ca5c528a"
+          }
+        },
+        {
           "client_id": "527959566877-1rte6s9me8890ae188ehnimd5m71qp4c.apps.googleusercontent.com",
           "client_type": 3
         }

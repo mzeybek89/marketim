@@ -2,7 +2,7 @@ import 'package:Marketim/models/konum.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:Marketim/utils/database_helper.dart';
-import 'package:Marketim/models/liste.dart';
+//import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/models/urunler.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -178,7 +178,7 @@ class _ListemPageState extends State<Listem>  with SingleTickerProviderStateMixi
                             itemCount:element.details.length,
                             itemBuilder: (BuildContext context,int index){
                               return ListTile(
-                                title: Text(element.details[index].product_name),
+                                title: Text(element.details[index].productName),
                                 subtitle: Text(f.format(element.details[index].price)),
                               );
                             },
@@ -204,31 +204,31 @@ class _ListemPageState extends State<Listem>  with SingleTickerProviderStateMixi
 class Details{
   int id;
   String stockCode;
-  String product_name;
+  String productName;
   double price;
   String img;
-  String remote_img;
-  String remote_link;
+  String remoteImg;
+  String remoteLink;
 
   Details({
     this.id,
     this.stockCode,
-    this.product_name,
+    this.productName,
     this.price,
     this.img,
-    this.remote_img,
-    this.remote_link
+    this.remoteImg,
+    this.remoteLink
   });
 
   factory Details.fromJson(Map<String,dynamic> parsedJson){
     return Details(
       id:int.parse(parsedJson['id']),
       stockCode: parsedJson['stock_code'] as String,
-      product_name: parsedJson['product_name'] as String,
+      productName: parsedJson['product_name'] as String,
       price: double.parse(parsedJson['price']),
       img: parsedJson['img'] as String,
-      remote_img: parsedJson['remote_img'] as String,
-      remote_link: parsedJson['remote_link'] as String
+      remoteImg: parsedJson['remote_img'] as String,
+      remoteLink: parsedJson['remote_link'] as String
     );
   }
 

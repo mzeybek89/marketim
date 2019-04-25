@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Test extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text("FireStore"),

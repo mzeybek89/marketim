@@ -1,4 +1,4 @@
-package com.example.marketim;
+package com.zeybek.marketim;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

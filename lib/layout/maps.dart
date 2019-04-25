@@ -6,6 +6,8 @@ import 'package:Marketim/utils/database_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 import "package:google_maps_webservice/geocoding.dart" as ws;
+import 'package:flutter/foundation.dart' show TargetPlatform;
+
 //import 'package:sqflite/sqflite.dart';
 
 class Maps extends StatefulWidget  {
@@ -16,6 +18,7 @@ class Maps extends StatefulWidget  {
 }
 
 class _MapsPageState extends State<Maps> {  
+
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Konum> konum;
   Completer<GoogleMapController> _controller = Completer();
@@ -26,6 +29,7 @@ class _MapsPageState extends State<Maps> {
   var yerler = List<Yerler>();
   double lat,lng;
   int id = 0;
+  double _padding=.1;
   LatLng _lastMapPosition = LatLng(0, 0);
   CameraPosition _myLoc = CameraPosition(
     target: LatLng(38.467866199999996, 27.2184286),
@@ -77,6 +81,12 @@ class _MapsPageState extends State<Maps> {
          id =this.konum[0].id;
        });
     }
+
+      if(Theme.of(context).platform == TargetPlatform.iOS){
+        setState(() {
+          _padding = 15;
+        });
+      }
     
       setState(() {
           _myLoc = CameraPosition(
@@ -185,7 +195,7 @@ void _onCameraMove(CameraPosition position) async{
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height-250,
-              padding: EdgeInsets.all(15),        
+              padding: EdgeInsets.all(_padding),        
               child:Stack(        
                 children:<Widget>[
                   GoogleMap(                        

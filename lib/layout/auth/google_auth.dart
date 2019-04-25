@@ -67,6 +67,7 @@ class AuthService {
   Future<String> signOut() async {
     try {
       await _auth.signOut();
+      await _googleSignIn.signOut();
       return 'SignOut';
     } catch (e) {
       return e.toString();
@@ -75,5 +76,4 @@ class AuthService {
 
 }
 
-// TODO refactor global to InheritedWidget
 final AuthService authService = AuthService();
