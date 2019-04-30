@@ -12,6 +12,8 @@ import 'package:Marketim/utils/database_helper.dart';
 import './marketler/marketler.dart';
 import 'package:Marketim/layout/test/firestore.dart';
 import 'package:Marketim/layout/auth/google_auth.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+
 
 
 
@@ -271,7 +273,8 @@ class _MyHomePageState extends State<Home> {
              StreamBuilder(
                stream: authService.user,
                builder: (context,snapshot){
-                 if(_profile.toString()!="{}"){
+                 if(_profile!=null &&  _profile.toString()!="{}"){
+                //if(authService.isSignedIn()==true){
                   return  UserAccountsDrawerHeader(            
                         accountName: Text(_profile['displayName'].toString()),                
                         accountEmail: Text(_profile['email'].toString()),
@@ -302,13 +305,16 @@ class _MyHomePageState extends State<Home> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[                              
-                            GestureDetector(
+                            children: <Widget>[    
+                            GoogleSignInButton(onPressed: () {
+                              authService.googleSignIn();
+                            }, darkMode: true),
+                            /*GestureDetector(
                               child:Image.asset("assets/images/login_google.png",width: 200,),
                               onTap: (){
                                 authService.googleSignIn();
                               },
-                            ),
+                            ),*/
                             Expanded(child: Text(""),),
                               GestureDetector(
                               child:Icon(Icons.location_on,color: Colors.white,),
