@@ -305,16 +305,25 @@ class _MyHomePageState extends State<Home> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[    
-                            GoogleSignInButton(onPressed: () {
-                              authService.googleSignIn();
-                            }, darkMode: true),
-                            /*GestureDetector(
-                              child:Image.asset("assets/images/login_google.png",width: 200,),
-                              onTap: (){
-                                authService.googleSignIn();
-                              },
-                            ),*/
+                            children: <Widget>[  
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal:0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    GoogleSignInButton(onPressed: () {
+                                      authService.googleSignIn();
+                                    }, darkMode: true),                                                                    
+                                    /*FacebookSignInButton(onPressed:() {}),
+                                    RaisedButton(
+                                      onPressed: (){},
+                                      child: Text("Giriş Yap"),
+                                      color: Colors.white,
+                                    ),*/
+                                  ],
+                                ),
+                              ),                            
                             Expanded(child: Text(""),),
                               GestureDetector(
                               child:Icon(Icons.location_on,color: Colors.white,),
