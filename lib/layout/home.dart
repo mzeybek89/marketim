@@ -1,3 +1,4 @@
+import 'package:Marketim/layout/listeler/liste.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:barcode_scan/barcode_scan.dart';
@@ -233,7 +234,7 @@ class _MyHomePageState extends State<Home> {
                   Navigator.push(context, route);
                 },
              ),
-
+            /*
              GestureDetector(
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -262,7 +263,7 @@ class _MyHomePageState extends State<Home> {
                   Route route = MaterialPageRoute(builder: (context) => Test());
                   Navigator.push(context, route);                 
                 },
-             ),                
+             ),  */              
             ],
       ),
      drawer: Drawer(
@@ -449,7 +450,11 @@ class _MyHomePageState extends State<Home> {
 
 
                         onTap: () {
-                          debugPrint("ListTile Tapped");
+                           Route route = MaterialPageRoute(builder: (context) => Listem(
+                          id: liste[index].id,   
+                          title: liste[index].title,                    
+                          ));
+                          Navigator.push(context, route);
                           //navigateToDetail(this.noteList[position],'Edit Note');
                         },
 

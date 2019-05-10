@@ -45,7 +45,6 @@ class _ListemPageState extends State<Listem>  with SingleTickerProviderStateMixi
   String stockCodes ="";
   List<Markers> markers=[];
   bool _proggress = true;
-  
 
  Future getUrunler()async{
    urunler.clear();
@@ -178,8 +177,24 @@ class _ListemPageState extends State<Listem>  with SingleTickerProviderStateMixi
                             itemCount:element.details.length,
                             itemBuilder: (BuildContext context,int index){
                               return ListTile(
-                                title: Text(element.details[index].productName),
+                                title: Text(element.details[index].productName,style: TextStyle(
+                                  decoration: element.details[index].isChecked?TextDecoration.lineThrough:TextDecoration.none,
+                                ),),
                                 subtitle: Text(f.format(element.details[index].price)),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: (){
+                                     return showDialog(
+                                      context: context,
+                                      builder: (_) => new MyDialog(
+                                      ));   
+                                  },
+                                ),
+                                leading: new Checkbox(value: element.details[index].isChecked, onChanged: (bool newval){
+                                  setState(() {
+                                    element.details[index].isChecked=newval;
+                                  });
+                                }),
                               );
                             },
                           ),
@@ -209,6 +224,7 @@ class Details{
   String img;
   String remoteImg;
   String remoteLink;
+  bool isChecked;
 
   Details({
     this.id,
@@ -217,7 +233,8 @@ class Details{
     this.price,
     this.img,
     this.remoteImg,
-    this.remoteLink
+    this.remoteLink,
+    this.isChecked,
   });
 
   factory Details.fromJson(Map<String,dynamic> parsedJson){
@@ -228,7 +245,8 @@ class Details{
       price: double.parse(parsedJson['price']),
       img: parsedJson['img'] as String,
       remoteImg: parsedJson['remote_img'] as String,
-      remoteLink: parsedJson['remote_link'] as String
+      remoteLink: parsedJson['remote_link'] as String,
+      isChecked: false
     );
   }
 
@@ -251,5 +269,78 @@ class Markers{
       details: detailList,
       total: double.parse(json['total'])
     );
+  }
+}
+
+
+
+
+class MyDialog extends StatefulWidget {
+  const MyDialog();
+
+  @override
+  State createState() => new MyDialogState();
+}
+
+class MyDialogState extends State<MyDialog> {
+  DatabaseHelper databaseHelper = DatabaseHelper();
+
+
+
+
+ 
+  listeEkleWidget(BuildContext context){
+  return  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Liste Oluştur"),
+          content: new Container(
+          child: Text("deneme"),
+              
+        
+          ),
+  
+        );
+      },
+  ); 
+}
+
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Widget build(BuildContext context) {
+   return new AlertDialog(
+          title: new Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+            Expanded(child:Text("İşlemler"),),
+          ],),
+          content: ListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: <Widget>[
+              RaisedButton(
+                child: Text("Market Değiştir"),
+                onPressed: (){},
+              ),
+              RaisedButton(
+                child: Text("Liste Değiştir"),
+                onPressed: (){},
+              ),
+              RaisedButton(
+                child: Text("Listeden Çıkar"),
+                onPressed: (){},
+              ),
+            ],
+          )
+         
+        );  
   }
 }
