@@ -211,11 +211,10 @@ void _onCameraMove(CameraPosition position) async{
                     },                      
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(15),              
+                    padding: const EdgeInsets.all(10),              
                     child: Align(                
                       alignment: Alignment.topCenter,
-                      child: Container(
-                        height: 30,
+                      child: Container(                
                           child: _txtField(),
                       ),
                     ),
@@ -309,7 +308,7 @@ void _onCameraMove(CameraPosition position) async{
           hintText: "Adres Ara",
           fillColor: Colors.white,
           filled: true,                        
-          //contentPadding: EdgeInsets.all(20),                        
+          //contentPadding: EdgeInsets.fromLTRB(0, 20, 0, 0),                        
           border: new OutlineInputBorder(                                                                            
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(15),
@@ -368,7 +367,7 @@ void _onCameraMove(CameraPosition position) async{
   Widget searchList(BuildContext context){
     return searchRes ? 
       Padding(              
-        padding: const EdgeInsets.fromLTRB(16, 69, 16, 15),                            
+        padding: const EdgeInsets.fromLTRB(12, 64, 12, 15),                            
         child: Align(
           alignment: Alignment.topCenter,               
           child: Container(                                  
