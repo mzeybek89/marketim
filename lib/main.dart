@@ -16,8 +16,8 @@ DatabaseHelper databaseHelper = DatabaseHelper();
     databaseHelper.initializeDatabase();
     loc.Location location = new loc.Location();
     await location.requestPermission(); 
-    bool izin = await location.hasPermission();
-    if(izin==false){
+    location.hasPermission().then((izin) async {
+        if(izin==false){
         lat = 38.467866199999996;
         lng =  27.2184286;
 
@@ -51,8 +51,7 @@ DatabaseHelper databaseHelper = DatabaseHelper();
           }
         });
     }
-    
-
+    });
   }
 
 
