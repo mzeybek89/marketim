@@ -506,6 +506,7 @@ class _MyHomePageState extends State<Home> {
  @override
   void initState() {
     super.initState();
+    locationInfo();
     authService.profile.listen((state) => setState(() => _profile = state));
     //updateListe();
   }
