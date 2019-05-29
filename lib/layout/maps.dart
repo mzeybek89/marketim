@@ -201,7 +201,8 @@ void _onCameraMove(CameraPosition position) async{
                   GoogleMap(                        
                     tiltGesturesEnabled: true,
                     //cameraTargetBounds: CameraTargetBounds.unbounded,
-                    myLocationEnabled: false,                 
+                    myLocationEnabled: false,  
+                    myLocationButtonEnabled: false,                                   
                     mapType: MapType.normal,              
                     onCameraIdle: ()=>camStop(ws.Location(_lastMapPosition.latitude,_lastMapPosition.longitude)),
                     onCameraMove: _onCameraMove,
