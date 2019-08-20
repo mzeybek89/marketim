@@ -322,7 +322,9 @@ class MyDialogState extends State<MyDialog> {
             children: <Widget>[
             Expanded(child:Text("İşlemler"),),
           ],),
-          content: ListView(
+          content: Container(
+            width: double.maxFinite,
+            child: ListView(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             children: <Widget>[
@@ -339,6 +341,7 @@ class MyDialogState extends State<MyDialog> {
                 onPressed: (){},
               ),
             ],
+          ),
           )
          
         );  

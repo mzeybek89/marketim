@@ -297,24 +297,29 @@ class _MyHomePageState extends State<SubPage>  with SingleTickerProviderStateMix
                            return new AlertDialog(
                              contentPadding: EdgeInsets.all(0.0),
                               title: Center(child: Image.network("http://zeybek.tk/api/brand_image/"+marketlerim[index].brand.toLowerCase()+".png",width: 50,),),
-                              content: new Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  ListView.builder(                                      
-                                  shrinkWrap: true,
-                                  itemCount: marketlerim[index].details.length,
-                                  itemBuilder: (BuildContext context, int index2) {
-                                      return ListTile(
-                                          //leading: Icon(Icons.business),
-                                          title: Text(marketlerim[index].details[index2].name),
-                                          trailing: Text(f.format(marketlerim[index].details[index2].price)),
-                                          subtitle: Text(marketlerim[index].details[index2].address),
-                                      );
-                                  }
-                                  ),
-                                ],
+                              content: new 
+                              Container(
+                                width: double.maxFinite,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    ListView.builder(                                      
+                                    shrinkWrap: true,
+                                    itemCount: marketlerim[index].details.length,
+                                    itemBuilder: (BuildContext context, int index2) {
+                                        return ListTile(
+                                            //leading: Icon(Icons.business),
+                                            title: Text(marketlerim[index].details[index2].name),
+                                            trailing: Text(f.format(marketlerim[index].details[index2].price)),
+                                            subtitle: Text(marketlerim[index].details[index2].address),
+                                        );
+                                    }
+                                    ),
+                                  ],
+                                ),
                               ),
+                              
                               actions: <Widget>[
                                 new FlatButton(
                                   onPressed: () {
@@ -726,17 +731,26 @@ selectMarker(BuildContext context, int listeId,String stockCode){
             },),
           ],),          
           content: liste.length==0 ? 
-          new ListView(
-            shrinkWrap: true,
+          new Container(
+            width: double.maxFinite,
+            child:   ListView(
+              shrinkWrap: true,
+              children:<Widget>[
+                Container(
+                  child: Text("Üzgünüz Hiç Listeniz Yok Hemen Birtane Oluşturun"),
+                )
+              ]
+            ),
+          )
+          //Text("Üzgünüz Hiç Listeniz Yok Hemen Birtane Oluşturun")
+        
+          : 
+          new Container(
+            width: double.maxFinite,
+            child: Row(   
             children:<Widget>[
-              Container(
-                child: Text("Üzgünüz Hiç Listeniz Yok Hemen Birtane Oluşturun"),
-              )
-            ]
-          ): 
-          new Row(   
-            children:<Widget>[
-              Flexible(child:ListView.builder(
+              Flexible(
+                child:ListView.builder(
                   itemCount: liste.length,
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context,int i){
@@ -756,6 +770,8 @@ selectMarker(BuildContext context, int listeId,String stockCode){
               ),
             ], 
           ),
+          ),
+          
           actions: <Widget>[
             new FlatButton(
               child: new Text("Vazgeç"),
@@ -819,7 +835,10 @@ Future _urunKaydet() async{
   Widget build(BuildContext context) {
     return new AlertDialog(
         title: Text("Market Seç"),
-        content: new Column(
+        content: new 
+        Container(
+          width: double.maxFinite,
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -842,6 +861,7 @@ Future _urunKaydet() async{
             ),
             ),
           ],
+        ),
         ),
         actions: <Widget>[
           new FlatButton(
