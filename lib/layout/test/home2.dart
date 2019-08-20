@@ -313,6 +313,7 @@ class _MyHomePageState extends State<Home> {
                                       _saveListe(context,txtListeEkle.text);                                      
                                       Navigator.of(context).pop();                                    
                                     }
+                                    return true;
                                   },
                                 ),
                               ],

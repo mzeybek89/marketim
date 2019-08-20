@@ -202,7 +202,7 @@ void _onCameraMove(CameraPosition position) async{
                     tiltGesturesEnabled: true,
                     //cameraTargetBounds: CameraTargetBounds.unbounded,
                     myLocationEnabled: false,  
-                    myLocationButtonEnabled: false,                                   
+                    //myLocationButtonEnabled: false,                                   
                     mapType: MapType.normal,              
                     onCameraIdle: ()=>camStop(ws.Location(_lastMapPosition.latitude,_lastMapPosition.longitude)),
                     onCameraMove: _onCameraMove,

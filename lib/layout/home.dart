@@ -11,7 +11,7 @@ import 'package:Marketim/models/liste.dart';
 import 'package:Marketim/models/konum.dart';
 import 'package:Marketim/utils/database_helper.dart';
 import './marketler/marketler.dart';
-import 'package:Marketim/layout/test/firestore.dart';
+//import 'package:Marketim/layout/test/firestore.dart';
 import 'package:Marketim/layout/auth/google_auth.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 
@@ -401,6 +401,8 @@ class _MyHomePageState extends State<Home> {
                                       _saveListe(context,txtListeEkle.text);                                      
                                       Navigator.of(context).pop();                                    
                                     }
+
+                                    return true;
                                   },
                                 ),
                               ],

@@ -128,6 +128,7 @@ class _ListelerimPageState extends State<Listelerim>  with SingleTickerProviderS
                                       _saveListe(context,txtListeEkle.text);                                      
                                       Navigator.of(context).pop();                                    
                                     }
+                                    return true;
                                   },
                                 ),
                               ],

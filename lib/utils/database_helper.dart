@@ -46,7 +46,7 @@ class DatabaseHelper{
 
   Future<Database> initializeDatabase()async{
     Directory directory = await getApplicationDocumentsDirectory();
-    print(directory.path);
+    //print(directory.path);
     String path = directory.path + '/marketim.db';
 
     var marketimDatabase = openDatabase(path,version: 1, onCreate: _createDb,onUpgrade: _upgradeDb);

@@ -21,7 +21,7 @@ class Listem extends StatefulWidget  {
   _ListemPageState createState() => _ListemPageState(); 
 }
 
-class _ListemPageState extends State<Listem>  with SingleTickerProviderStateMixin {
+class _ListemPageState extends State<Listem>  with TickerProviderStateMixin {
   //var f = new NumberFormat("####.00# ₺", "tr_TR");
   var f = new NumberFormat.currency(locale: "tr_TR", name:"TL", symbol: "₺",decimalDigits: 2);
   TabController _tabController;
