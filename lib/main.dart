@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:location/location.dart';
 //import 'package:sqflite/sqflite.dart';
 import 'layout/home.dart';
 import 'layout/search.dart';
@@ -11,13 +14,15 @@ import 'package:Marketim/layout/listeler/listelerim.dart';
 
 DatabaseHelper databaseHelper = DatabaseHelper();
 
-  Future locationInfo() async{
+
+
+  Future locationInfo() async{    
     double lat,lng;
     databaseHelper.initializeDatabase();
     loc.Location location = new loc.Location();
     await location.requestPermission(); 
     location.hasPermission().then((izin) async {
-        if(izin==false){
+        if(izin==PermissionStatus.GRANTED){
         lat = 38.467866199999996;
         lng =  27.2184286;
 
@@ -57,8 +62,10 @@ DatabaseHelper databaseHelper = DatabaseHelper();
 
 Future main() async {
 
-  locationInfo();
+  WidgetsFlutterBinding.ensureInitialized();
 
+
+  locationInfo();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
