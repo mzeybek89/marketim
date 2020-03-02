@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "527959566877-aq2p0m32lddij7utmatn451rs0l4ut4t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeybek.marketim",
+            "certificate_hash": "f89c3ae7e4a8e4baaafbf3525602d0eb515a2d7e"
+          }
+        },
+        {
+          "client_id": "527959566877-bvj7j13oiqucip7a0egv6adgju01vdvl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeybek.marketim",
+            "certificate_hash": "179324aebce5ea251797b43646c75e2cc8a13564"
+          }
+        },
+        {
           "client_id": "527959566877-c85ef05gcvpf97qa78hdf4ktnemi8spg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
