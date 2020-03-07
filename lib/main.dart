@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:location/location.dart';
+//import 'package:location/location.dart';
 //import 'package:sqflite/sqflite.dart';
 import 'layout/home.dart';
 import 'layout/search.dart';
@@ -22,7 +22,7 @@ DatabaseHelper databaseHelper = DatabaseHelper();
     loc.Location location = new loc.Location();
     await location.requestPermission(); 
     location.hasPermission().then((izin) async {
-        if(izin==PermissionStatus.GRANTED){
+        if(izin){
         lat = 38.467866199999996;
         lng =  27.2184286;
 
